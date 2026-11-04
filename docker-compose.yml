@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: persona                       # base créée automatiquement au 1er démarrage
+    volumes:
+      - pgdata:/var/lib/postgresql/data          # données persistantes
+      # Tout .sql de ce dossier est exécuté au 1er démarrage (volume vide)
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    ports:
+      - "127.0.0.1:5432:5432"                    # accessible uniquement depuis ta machine
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d persona"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  n8n:
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy               # attend que Postgres soit prêt
+    ports:
+      - "5678:5678"
+    environment:
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres               # nom du service = adresse réseau interne
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: persona
+      DB_POSTGRESDB_SCHEMA: n8n                  # tables de N8N rangées à part de celles de Persona
+      DB_POSTGRESDB_USER: ${POSTGRES_USER}
+      DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD}
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+      NODE_FUNCTION_ALLOW_BUILTIN: crypto        # autorise 'crypto' dans les Code nodes (tokens)
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  pgdata:
+  n8n_data:
