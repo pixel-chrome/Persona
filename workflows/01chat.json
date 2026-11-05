@@ -1,0 +1,420 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        16,
+        16
+      ],
+      "id": "6fe26b64-7e21-4a6e-a475-18f867950e2d",
+      "name": "When chat message received",
+      "webhookId": "7c1f0a52-3b8e-4d1a-9f55-2a6d4e8b1c02"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.kind }}",
+                    "rightValue": "login",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "3724369b-0d00-4ea6-a11e-8b75cb686654"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "1eb8ca1c-1772-455a-ad8c-06215bcb0a15",
+                    "leftValue": "={{ $json.kind }}",
+                    "rightValue": "code",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "70cf6614-4a69-4ee1-bf88-364ca0835bd4",
+                    "leftValue": "={{ $json.kind }}",
+                    "rightValue": "error",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "c472a6a2-664c-474b-894a-c724654641d3",
+                    "leftValue": "={{ $json.kind }}",
+                    "rightValue": "chat",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.5,
+      "position": [
+        464,
+        -16
+      ],
+      "id": "3e09f4bc-7c79-4cdb-829a-89619b1d1522",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Nœud Postgres « Enregistrer code » (Execute Query)\n-- Query Parameters : {{ [$json.email, $json.code_hash, $json.session_hash] }}\n-- Anti-spam : le WHERE refuse de remplacer un code créé il y a moins d'1 minute (0 ligne renvoyée).\nINSERT INTO login_codes (email, code_hash, session_hash, expires_at, attempts, created_at)\nVALUES ($1, $2, $3, now() + interval '10 minutes', 0, now())\nON CONFLICT (email) DO UPDATE\n  SET code_hash    = EXCLUDED.code_hash,\n      session_hash = EXCLUDED.session_hash,\n      expires_at   = EXCLUDED.expires_at,\n      attempts     = 0,\n      created_at   = now()\n  WHERE login_codes.created_at < now() - interval '1 minute'\nRETURNING email;\n",
+        "options": {
+          "queryReplacement": "={{ [$json.email, $json.code_hash, $json.session_hash] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.8,
+      "position": [
+        848,
+        -416
+      ],
+      "id": "58cbb42e-0809-49c0-8d25-a0d166033402",
+      "name": "Enregistrer code",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "BXcRV2jAUKnfoJgN",
+          "name": "Postgres persona"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Nœud Code « Générer code » — JavaScript, mode « Run Once for Each Item »\n// Nécessite NODE_FUNCTION_ALLOW_BUILTIN=crypto (déjà dans docker-compose.yml)\nconst crypto = require('crypto');\nconst sha256 = (s) => crypto.createHash('sha256').update(s).digest('hex');\nconst code = String(crypto.randomInt(0, 1000000)).padStart(6, '0');   // 000000 à 999999\nreturn { json: {\n  email: $json.email,\n  code,                                   // en clair : uniquement pour le mail\n  code_hash: sha256(code),\n  session_hash: sha256($json.sessionId),  // lie le code à cette conversation\n} };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        -416
+      ],
+      "id": "67054f4b-2f31-402b-a42b-09fdf62ce06f",
+      "name": "Générer code"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ddca8b30-16be-4a9d-8f82-65e5d8769e2d",
+              "name": "output",
+              "value": "={{ $json.kind }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        784,
+        144
+      ],
+      "id": "143873d5-3677-401b-aaaa-f0e78baec03d",
+      "name": "Branche error"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Nœud Code « Parse commande » — mode « Run Once for Each Item », langage JavaScript\nconst text = String($json.chatInput ?? '').trim();\nconst sessionId = $json.sessionId;\nconst FORMAT = 'Commandes : /connexion ton@email.com puis /code 123456';\n\nif (text.length > 500) {\n  return { json: { kind: 'error', reply: 'Message trop long (500 caractères max).', sessionId } };\n}\n\nlet m = text.match(/^\\/connexion\\s+([^\\s@]+@[^\\s@]+\\.[^\\s@]+)$/i);\nif (m && m[1].length <= 254) {\n  return { json: { kind: 'login', email: m[1].toLowerCase(), sessionId } };\n}\n\nm = text.match(/^\\/code\\s+(\\d{6})$/);\nif (m) {\n  return { json: { kind: 'code', code: m[1], sessionId } };\n}\n\n// Garde-fou : une commande mal formée ou cachée dans une phrase ne part JAMAIS au LLM\nif (/\\/connexion|\\/code/i.test(text)) {\n  return { json: { kind: 'error', reply: 'Format invalide. ' + FORMAT, sessionId } };\n}\n\nreturn { json: { kind: 'chat', chatInput: text, sessionId } };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        16
+      ],
+      "id": "8b3c278f-f0c4-4ffd-bfca-323df79373f3",
+      "name": "Récupérer commande /..."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "463fd36d-7eba-4cc9-a1d9-f58cbbc6620f",
+              "leftValue": "={{ $json.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        1056,
+        -416
+      ],
+      "id": "c3da47da-720c-4fca-8090-2a5ce5570710",
+      "name": "code créé ?"
+    },
+    {
+      "parameters": {
+        "fromEmail": "paul.demarque.spam@gmail.com",
+        "toEmail": "={{ $('Générer code').item.json.email }}",
+        "subject": "Ton code de connexion Persona",
+        "emailFormat": "text",
+        "text": "=Ton code de connexion Persona : {{ $('Générer code').item.json.code }}\nIl est valable 10 minutes.\n\nEn saisissant ce code dans le chat, tu confirmes que cette adresse est bien la tienne et tu acceptes de recevoir la newsletter Persona. Tu pourras te désinscrire à tout moment.\n\nSi tu n'es pas à l'origine de cette demande, ignore simplement ce mail.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1248,
+        -560
+      ],
+      "id": "c5b0c2e9-2400-4d68-af08-472bdb970210",
+      "name": "Envoyer code",
+      "webhookId": "fe02e7a3-305a-42b8-a594-a9e096a0fa10",
+      "credentials": {
+        "smtp": {
+          "id": "OxkjKRNvuuQOgPtZ",
+          "name": "SMTP persona"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "78221964-d83a-4620-8854-b978e5701e29",
+              "name": "output",
+              "value": "Un code à 6 chiffres vient d'être envoyé à ton adresse. Tape /code 123456 (en remplaçant par ton code) dans les 10 minutes.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1472,
+        -560
+      ],
+      "id": "4449279c-9d2c-4a85-b5de-3f4b9fc98fe3",
+      "name": "Reponse chat code envoyé"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d6e22eb5-6ff0-434a-be4c-1c4ac290299d",
+              "name": "output",
+              "value": "Un code vient d'être envoyé. Patiente 1 minute avant d'en redemander un.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1280,
+        -320
+      ],
+      "id": "5b96a60f-438a-47fa-98b2-9684a9fb1687",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Récupérer commande /...",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Générer code",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [
+          {
+            "node": "Branche error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Générer code": {
+      "main": [
+        [
+          {
+            "node": "Enregistrer code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Récupérer commande /...": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enregistrer code": {
+      "main": [
+        [
+          {
+            "node": "code créé ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "code créé ?": {
+      "main": [
+        [
+          {
+            "node": "Envoyer code",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envoyer code": {
+      "main": [
+        [
+          {
+            "node": "Reponse chat code envoyé",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "saveDataSuccessExecution": "none",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "66add8ca-b37c-44b7-a559-f963d6aa42a5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f759c8d61638adda5da2caf28408f3598cbfe088241fbb352d7ef3d026f764be"
+  },
+  "nodeGroups": [],
+  "id": "wZkdDy14b92lU1ML",
+  "tags": []
+}
