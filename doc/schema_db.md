@@ -19,6 +19,7 @@ Pour le rejouer : `docker compose down -v && docker compose up -d` (⚠️ effac
 ## Tables (schéma `public`)
 
 ```
+login_codes   (indépendante : codes email en attente)
 users ──< sessions
   │──── preferences   (1-1)
   │──< sent_log
@@ -26,11 +27,12 @@ users ──< sessions
 ```
 
 ### `users`
-Comptes. `role` ∈ {`user`, `admin`}.
-- `password_hash` : **bcrypt** via `pgcrypto` (le sel est inclus dans le hash, jamais de mot de passe en clair).
-- `consent_at` (NOT NULL) + `unsubscribed` : **RGPD**, preuve du consentement et désinscription.
-- `failed_logins` + `locked_until` : blocage temporaire anti brute-force.
-- Index unique sur `lower(username)` et `lower(email)` : `Paul` et `paul` = même compte.
+Comptes, identifiés par **email** (pas de mot de passe). `role` ∈ {`user`, `admin`}.
+- Création à la **première validation d'un code email** : l'adresse est prouvée, `consent_at` est posé à ce moment (RGPD) et `unsubscribed` permet de se désinscrire.
+- Index unique sur `lower(email)` : `Paul@x.fr` et `paul@x.fr` = même compte.
+
+### `login_codes`
+Code à 6 chiffres envoyé par email. On stocke son **SHA-256** (`code_hash`), jamais le code brut. `session_hash` lie le code à la conversation du chat qui l'a demandé (sinon `/code 123456` ne dirait pas à quel email il se rapporte). Une seule ligne par adresse (clé primaire = `email`) : redemander un code remplace l'ancien. `expires_at` (10 min), `attempts` (blocage à 5 essais ratés) et `created_at` (pas plus d'un envoi par minute) protègent contre le brute-force et le spam d'emails. Ligne supprimée après validation.
 
 ### `sessions`
 Connexion au chatbot. Clé primaire = `token_hash` (**SHA-256 du token**) : si la base fuite, les tokens ne sont pas utilisables. `expires_at` pour l'expiration.

@@ -3,24 +3,31 @@
 -- Schéma "n8n" : N8N y range ses propres tables, séparées des nôtres (schéma "public").
 CREATE SCHEMA IF NOT EXISTS n8n;
 
--- pgcrypto : hash de mots de passe (bcrypt) et octets aléatoires, directement dans Postgres.
+-- pgcrypto : hash SHA-256 (codes, tokens) et octets aléatoires, directement dans Postgres.
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE users (
     id             INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    username       TEXT NOT NULL,
     email          TEXT NOT NULL,
-    password_hash  TEXT NOT NULL,                  -- bcrypt : le sel est inclus dans le hash
     role           TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
-    consent_at     TIMESTAMPTZ NOT NULL,           -- RGPD : preuve du consentement
+    consent_at     TIMESTAMPTZ NOT NULL,           -- RGPD : posé quand le code email est validé
     unsubscribed   BOOLEAN NOT NULL DEFAULT FALSE, -- RGPD : plus d'envoi
-    failed_logins  INTEGER NOT NULL DEFAULT 0,
-    locked_until   TIMESTAMPTZ,
     created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
--- Unicité insensible à la casse : "Paul" et "paul" = même compte
-CREATE UNIQUE INDEX users_username_uq ON users (lower(username));
+-- Unicité insensible à la casse : "Paul@x.fr" et "paul@x.fr" = même compte
 CREATE UNIQUE INDEX users_email_uq    ON users (lower(email));
+
+-- Codes de connexion à usage unique envoyés par email (un seul code actif par adresse).
+CREATE TABLE login_codes (
+    email       TEXT PRIMARY KEY,                  -- en minuscules
+    code_hash   TEXT NOT NULL,                     -- SHA-256 du code (jamais le code brut)
+    session_hash TEXT NOT NULL,                    -- SHA-256 du sessionId du chat qui a demandé le code
+    expires_at  TIMESTAMPTZ NOT NULL,              -- ex: now() + 10 min
+    attempts    INTEGER NOT NULL DEFAULT 0,        -- essais ratés ; bloqué à 5
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now() -- sert à limiter l'envoi de codes (anti-spam)
+);
+
+CREATE INDEX login_codes_session_idx ON login_codes (session_hash);
 
 CREATE TABLE sessions (
     token_hash  TEXT PRIMARY KEY,                  -- SHA-256 du token (jamais le token brut)
