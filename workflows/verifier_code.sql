@@ -1,6 +1,4 @@
 -- Nœud Postgres « Vérifier code » (Execute Query)
--- Query Parameters : {{ [$json.session_hash, $json.code_hash] }}
--- Une seule requête atomique : soit le code est bon (ligne supprimée = usage unique),
 -- soit on compte un essai raté. Les deux conditions s'excluent, jamais les deux à la fois.
 WITH ok AS (
   DELETE FROM login_codes

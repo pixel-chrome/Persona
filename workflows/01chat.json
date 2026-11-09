@@ -134,7 +134,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.8,
       "position": [
-        848,
+        880,
         -416
       ],
       "id": "58cbb42e-0809-49c0-8d25-a0d166033402",
@@ -155,7 +155,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        656,
+        704,
         -416
       ],
       "id": "67054f4b-2f31-402b-a42b-09fdf62ce06f",
@@ -178,8 +178,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        784,
-        144
+        704,
+        32
       ],
       "id": "143873d5-3677-401b-aaaa-f0e78baec03d",
       "name": "Branche error"
@@ -282,6 +282,77 @@
     },
     {
       "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Nœud Code « Hasher saisie »\nconst crypto = require('crypto');\nconst sha256 = (s) => crypto.createHash('sha256').update(s).digest('hex');\nreturn { json: { code_hash: sha256($json.code), session_hash: sha256($json.sessionId) } };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        704,
+        -176
+      ],
+      "id": "8dadb276-3c93-4ada-b3d7-91e0b8bc1328",
+      "name": "Hasher saisie"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Nœud Postgres « Vérifier code » (Execute Query)\n-- soit on compte un essai raté. Les deux conditions s'excluent, jamais les deux à la fois.\nWITH ok AS (\n  DELETE FROM login_codes\n  WHERE session_hash = $1 AND code_hash = $2 AND expires_at > now() AND attempts < 5\n  RETURNING email\n), bad AS (\n  UPDATE login_codes SET attempts = attempts + 1\n  WHERE session_hash = $1\n    AND NOT (code_hash = $2 AND expires_at > now() AND attempts < 5)\n  RETURNING 1\n)\nSELECT (SELECT email FROM ok) AS email;   -- toujours 1 ligne ; email NULL si refus\n",
+        "options": {
+          "queryReplacement": "={{ [$json.session_hash, $json.code_hash] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.8,
+      "position": [
+        928,
+        -176
+      ],
+      "id": "179dcca6-551b-4f53-9133-dcfa9130739f",
+      "name": "Vérifier code",
+      "credentials": {
+        "postgres": {
+          "id": "BXcRV2jAUKnfoJgN",
+          "name": "Postgres persona"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "14d12122-ff43-491e-93f3-83bb4e7664ee",
+              "leftValue": "={{ $json.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        1152,
+        -176
+      ],
+      "id": "bded0d0f-4710-4f44-bd54-6fb286dfd5f0",
+      "name": "If"
+    },
+    {
+      "parameters": {
         "assignments": {
           "assignments": [
             {
@@ -297,11 +368,80 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        1280,
-        -320
+        1296,
+        -384
       ],
       "id": "5b96a60f-438a-47fa-98b2-9684a9fb1687",
-      "name": "Edit Fields"
+      "name": "msg Code NON envoyé"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "93a231a6-38b6-4515-84b4-5ca27dbb390a",
+              "name": "output",
+              "value": "Connecté !",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1648,
+        -240
+      ],
+      "id": "082b6ead-daaf-46aa-83dc-5b68b11b2c4b",
+      "name": "msg Succès"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a114a592-3b68-47e8-9987-ed07bdea3a6b",
+              "name": "output",
+              "value": "Code invalide, expiré, ou trop d'essais",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1424,
+        -48
+      ],
+      "id": "a32a7723-c589-4979-8d19-008874814544",
+      "name": "msg code PAS OK"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH u AS (\n  INSERT INTO users (email, consent_at)\n  VALUES (lower($1), now())\n  ON CONFLICT (lower(email)) DO UPDATE SET email = users.email\n  RETURNING id\n)\nINSERT INTO sessions (token_hash, user_id, expires_at)\nSELECT $2, id, now() + interval '24 hours' FROM u\nON CONFLICT (token_hash) DO UPDATE\n  SET user_id = EXCLUDED.user_id, expires_at = EXCLUDED.expires_at;",
+        "options": {
+          "queryReplacement": "={{ [$json.email, $('Hasher saisie').item.json.session_hash] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.8,
+      "position": [
+        1424,
+        -240
+      ],
+      "id": "f065c525-8f7e-4edb-b166-4118e868f0cd",
+      "name": "Créer USER + Session",
+      "credentials": {
+        "postgres": {
+          "id": "BXcRV2jAUKnfoJgN",
+          "name": "Postgres persona"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -326,7 +466,13 @@
             "index": 0
           }
         ],
-        [],
+        [
+          {
+            "node": "Hasher saisie",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "Branche error",
@@ -381,7 +527,7 @@
         ],
         [
           {
-            "node": "Edit Fields",
+            "node": "msg Code NON envoyé",
             "type": "main",
             "index": 0
           }
@@ -398,6 +544,57 @@
           }
         ]
       ]
+    },
+    "Hasher saisie": {
+      "main": [
+        [
+          {
+            "node": "Vérifier code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vérifier code": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Créer USER + Session",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "msg code PAS OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Créer USER + Session": {
+      "main": [
+        [
+          {
+            "node": "msg Succès",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -409,7 +606,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "66add8ca-b37c-44b7-a559-f963d6aa42a5",
+  "versionId": "4087383f-c2bf-4a52-a182-d24a3da4790b",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "f759c8d61638adda5da2caf28408f3598cbfe088241fbb352d7ef3d026f764be"
