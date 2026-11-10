@@ -1,0 +1,301 @@
+{
+  "name": "fetch_news",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        16
+      ],
+      "id": "eed36b09-b7b7-4f08-9523-83d590de1ad7",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "3081fcb7-e354-4826-a1fc-e7fed5aa3dfa",
+              "leftValue": "={{ DateTime.fromISO($json.date) }}",
+              "rightValue": "={{ $now.minus({ hours: 24 }) }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.4,
+      "position": [
+        848,
+        16
+      ],
+      "id": "18c63116-4bb2-426c-b567-274805224f48",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "url": "https://feeds.bbci.co.uk/news/rss.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -48,
+        -80
+      ],
+      "id": "23762aa7-dd4b-4f86-baab-94704ed04413",
+      "name": "RSS_BBC",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://www.lemonde.fr/rss/une.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -48,
+        112
+      ],
+      "id": "a997648c-0402-458f-9107-b89f1fabcca8",
+      "name": "RSS_LeMonde",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6222469a-3715-49d2-a545-f16eb5981972",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "d2d181e7-d4bd-4173-bcba-8e60fff53f3d",
+              "name": "url",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "fe177379-342c-4280-bd72-9e43177b1740",
+              "name": "source",
+              "value": "BBC",
+              "type": "string"
+            },
+            {
+              "id": "2e5c436a-34f4-444c-96dd-fd73879096c4",
+              "name": "date",
+              "value": "={{ $json.isoDate }}",
+              "type": "string"
+            },
+            {
+              "id": "f8058049-6bf1-4a7c-9fcd-39638951dc3a",
+              "name": "extrait",
+              "value": "={{ $json.contentSnippet }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": false,
+          "dotNotation": false
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        176,
+        -80
+      ],
+      "id": "7b74b1d0-6266-498f-b91e-c9af868095f3",
+      "name": "Format_BBC",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6222469a-3715-49d2-a545-f16eb5981972",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "d2d181e7-d4bd-4173-bcba-8e60fff53f3d",
+              "name": "url",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "fe177379-342c-4280-bd72-9e43177b1740",
+              "name": "source",
+              "value": "LeMonde",
+              "type": "string"
+            },
+            {
+              "id": "2e5c436a-34f4-444c-96dd-fd73879096c4",
+              "name": "date",
+              "value": "={{ $json.isoDate }}",
+              "type": "string"
+            },
+            {
+              "id": "f8058049-6bf1-4a7c-9fcd-39638951dc3a",
+              "name": "extrait",
+              "value": "={{ $json.contentSnippet }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": false,
+          "dotNotation": false
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        176,
+        112
+      ],
+      "id": "04c6ab0a-1888-4c3e-950e-a9a0c2f232fc",
+      "name": "Format_LeMonde",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        400,
+        16
+      ],
+      "id": "4c57bad8-9c96-4acf-b0ab-a7a8cf336a08",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "url",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        624,
+        16
+      ],
+      "id": "7139ad86-20b6-4cbc-ba8d-7370e4d1f0f7",
+      "name": "Remove Duplicates"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "RSS_BBC",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS_LeMonde",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS_BBC": {
+      "main": [
+        [
+          {
+            "node": "Format_BBC",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS_LeMonde": {
+      "main": [
+        [
+          {
+            "node": "Format_LeMonde",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format_BBC": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format_LeMonde": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "84bf4c0f-1869-47c1-b050-cd5deba446c2",
+  "nodeGroups": [],
+  "id": "1d1r3NH7op0wo3sP",
+  "tags": []
+}
