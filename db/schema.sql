@@ -10,7 +10,7 @@ CREATE TABLE users (
     id             INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     email          TEXT NOT NULL,
     role           TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
-    consent_at     TIMESTAMPTZ NOT NULL,           -- RGPD : posé quand le code email est validé
+    consent_at     TIMESTAMPTZ,                    -- RGPD : NULL tant que l'user n'a pas tapé /accepte
     unsubscribed   BOOLEAN NOT NULL DEFAULT FALSE, -- RGPD : plus d'envoi
     created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );

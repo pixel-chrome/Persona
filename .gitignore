@@ -1,1 +1,4 @@
 .env
+
+# Extraits de code (copier-coller vers n8n) et outils de dev : la source de vérité est workflows/*.json
+dev/
