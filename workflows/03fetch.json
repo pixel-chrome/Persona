@@ -7,7 +7,7 @@
       "typeVersion": 1,
       "position": [
         -272,
-        16
+        112
       ],
       "id": "eed36b09-b7b7-4f08-9523-83d590de1ad7",
       "name": "When clicking ‘Execute workflow’"
@@ -202,6 +202,52 @@
       ],
       "id": "7139ad86-20b6-4cbc-ba8d-7370e4d1f0f7",
       "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "url": "https://api.asknews.app/v1/news/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "technology"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -48,
+        304
+      ],
+      "id": "2900c20e-cddf-4337-81ca-d7debabf1052",
+      "name": "API_AskNews",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "MomRBAgMxlog0Smc",
+          "name": "AskNews_API_Persona"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "as_dicts",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        256
+      ],
+      "id": "6d5b196b-e2ba-42d2-9964-b035a4961cdf",
+      "name": "Split Out"
     }
   ],
   "pinData": {},
@@ -211,6 +257,11 @@
         [
           {
             "node": "RSS_BBC",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "API_AskNews",
             "type": "main",
             "index": 0
           },
@@ -287,6 +338,17 @@
           }
         ]
       ]
+    },
+    "API_AskNews": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -294,7 +356,10 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "84bf4c0f-1869-47c1-b050-cd5deba446c2",
+  "versionId": "5aac29e7-5174-420a-b147-53dc50c2d8fc",
+  "meta": {
+    "instanceId": "f759c8d61638adda5da2caf28408f3598cbfe088241fbb352d7ef3d026f764be"
+  },
   "nodeGroups": [],
   "id": "1d1r3NH7op0wo3sP",
   "tags": []
