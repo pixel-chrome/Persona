@@ -62,7 +62,7 @@ Après l'import, ouvrir chaque workflow, rattacher les credentials (section 3), 
 | `POSTGRES_PERSONA` | Postgres | Host `postgres`, port `5432`, database `persona`, user/password = valeurs du `.env` |
 | `SMTP_PERSONA` | SMTP | Serveur, port, utilisateur et mot de passe de votre fournisseur d'envoi (ex. Gmail avec mot de passe d'application) |
 | `LLM_PERSONA` | Selon le modèle choisi | Clé API du fournisseur **[À COMPLÉTER]** |
-| Clé API news | **[À COMPLÉTER]** | Si une API de news est utilisée (les flux RSS n'en demandent pas) |
+| `ASK_NEWS_API_KEY` | clef API | clef API pour AskNews |
 
 ## 4. Utiliser Persona via le chatbot
 
