@@ -19,7 +19,7 @@ services:
       retries: 10
 
   n8n:
-    image: n8nio/n8n:latest
+    image: n8nio/n8n:2.46.5                    # version figée
     restart: unless-stopped
     depends_on:
       postgres:
@@ -38,6 +38,12 @@ services:
       NODE_FUNCTION_ALLOW_BUILTIN: crypto        # autorise 'crypto' dans les Code nodes (tokens)
       SMTP_FROM: ${SMTP_FROM}                    # expéditeur des mails, lu via {{ $env.SMTP_FROM }}
       N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"      # autorise $env dans les expressions des nœuds
+      # RGPD / minimisation : n8n ne garde pas les exécutions réussies (emails, messages, codes)
+      EXECUTIONS_DATA_SAVE_ON_SUCCESS: none
+      EXECUTIONS_DATA_SAVE_ON_ERROR: all         # on garde les erreurs pour débugger...
+      EXECUTIONS_DATA_SAVE_MANUAL_EXECUTIONS: "true"  # ...et les tests lancés depuis l'éditeur
+      EXECUTIONS_DATA_PRUNE: "true"              # ...mais tout est purgé automatiquement
+      EXECUTIONS_DATA_MAX_AGE: 24                # au bout de 24 h (durée de conservation à documenter)
     volumes:
       - n8n_data:/home/node/.n8n
 

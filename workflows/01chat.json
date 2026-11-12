@@ -172,13 +172,7 @@
       ],
       "id": "d1baab3a-a795-4a4b-896a-5d446d2c7c8f",
       "name": "Enregistrer code",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "umwZAJ2AeT3uxVx8",
-          "name": "POSTGRES_PERSONA"
-        }
-      }
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -212,7 +206,7 @@
       "typeVersion": 3.5,
       "position": [
         688,
-        576
+        592
       ],
       "id": "0a74e582-3a46-420f-adcc-daaa4a9e121d",
       "name": "Branche error"
@@ -267,7 +261,7 @@
     },
     {
       "parameters": {
-        "fromEmail": "{{ $env.SMTP_FROM }}",
+        "fromEmail": "={{ $env.SMTP_FROM }}",
         "toEmail": "={{ $('Générer code').item.json.email }}",
         "subject": "Ton code de connexion Persona",
         "emailFormat": "text",
@@ -282,13 +276,7 @@
       ],
       "id": "0a81f8a5-d560-4e7d-9827-52c687fc96a2",
       "name": "Envoyer code",
-      "webhookId": "fe02e7a3-305a-42b8-a594-a9e096a0fa10",
-      "credentials": {
-        "smtp": {
-          "id": "ZdYqufV2kqDrcRil",
-          "name": "SMTP_PERSONA"
-        }
-      }
+      "webhookId": "fe02e7a3-305a-42b8-a594-a9e096a0fa10"
     },
     {
       "parameters": {
@@ -342,13 +330,7 @@
         144
       ],
       "id": "468a8f98-4d4f-4060-b299-447dc146d922",
-      "name": "Vérifier code",
-      "credentials": {
-        "postgres": {
-          "id": "umwZAJ2AeT3uxVx8",
-          "name": "POSTGRES_PERSONA"
-        }
-      }
+      "name": "Vérifier code"
     },
     {
       "parameters": {
@@ -468,13 +450,7 @@
         80
       ],
       "id": "9255b28f-2e1c-49b2-8af4-da30e95dd66e",
-      "name": "Créer USER + Session",
-      "credentials": {
-        "postgres": {
-          "id": "umwZAJ2AeT3uxVx8",
-          "name": "POSTGRES_PERSONA"
-        }
-      }
+      "name": "Créer USER + Session"
     },
     {
       "parameters": {
@@ -505,13 +481,7 @@
         1008
       ],
       "id": "011d3cd0-6b11-40a4-961a-903ae604c02c",
-      "name": "Verifier session",
-      "credentials": {
-        "postgres": {
-          "id": "umwZAJ2AeT3uxVx8",
-          "name": "POSTGRES_PERSONA"
-        }
-      }
+      "name": "Verifier session"
     },
     {
       "parameters": {
@@ -622,16 +592,11 @@
         1392
       ],
       "id": "741c9e17-324b-412d-806f-95da85263f98",
-      "name": "Fermer session",
-      "credentials": {
-        "postgres": {
-          "id": "umwZAJ2AeT3uxVx8",
-          "name": "POSTGRES_PERSONA"
-        }
-      }
+      "name": "Fermer session"
     },
     {
       "parameters": {
+        "modelName": "models/gemini-3.5-flash-lite",
         "options": {
           "temperature": 0
         }
@@ -639,17 +604,11 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.2,
       "position": [
-        1712,
-        1488
+        2160,
+        1632
       ],
       "id": "42b80e9e-dd11-4be5-b5f3-f5dac912e67c",
-      "name": "Google Gemini Chat Model",
-      "credentials": {
-        "googlePalmApi": {
-          "id": "WQ0gcVoBxkPFcUqy",
-          "name": "LLM_PERSONA"
-        }
-      }
+      "name": "Google Gemini Chat Model"
     },
     {
       "parameters": {
@@ -667,11 +626,12 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        1712,
-        1312
+        2160,
+        1456
       ],
       "id": "86d789e1-78c9-4929-9801-87949a731650",
-      "name": "Extraire préférence"
+      "name": "Extraire préférence",
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -681,8 +641,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2000,
-        1312
+        2496,
+        1344
       ],
       "id": "17b60d0c-5a6a-4624-b11e-98dff77f3dd2",
       "name": "Valider extraction"
@@ -698,17 +658,11 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.8,
       "position": [
-        2192,
-        1312
+        2688,
+        1344
       ],
       "id": "50b2e921-d1ee-4847-93ce-2722c6375052",
-      "name": "Enregistrer préférence",
-      "credentials": {
-        "postgres": {
-          "id": "umwZAJ2AeT3uxVx8",
-          "name": "POSTGRES_PERSONA"
-        }
-      }
+      "name": "Enregistrer préférence"
     },
     {
       "parameters": {
@@ -914,13 +868,7 @@
         352
       ],
       "id": "1573233f-9267-47c7-b581-c6ea9a9ee219",
-      "name": "Donner consentement",
-      "credentials": {
-        "postgres": {
-          "id": "umwZAJ2AeT3uxVx8",
-          "name": "POSTGRES_PERSONA"
-        }
-      }
+      "name": "Donner consentement"
     },
     {
       "parameters": {
@@ -937,13 +885,7 @@
         688
       ],
       "id": "045487f6-fe5e-4187-9bb7-a9fd171111c4",
-      "name": "Abonnement",
-      "credentials": {
-        "postgres": {
-          "id": "umwZAJ2AeT3uxVx8",
-          "name": "POSTGRES_PERSONA"
-        }
-      }
+      "name": "Abonnement"
     },
     {
       "parameters": {
@@ -1020,13 +962,7 @@
         896
       ],
       "id": "41943c32-8d13-468a-92c8-2612211d59d2",
-      "name": "Mes données",
-      "credentials": {
-        "postgres": {
-          "id": "umwZAJ2AeT3uxVx8",
-          "name": "POSTGRES_PERSONA"
-        }
-      }
+      "name": "Mes données"
     },
     {
       "parameters": {
@@ -1057,13 +993,7 @@
         1072
       ],
       "id": "71391163-48fb-4fcb-b93f-60f4c1564b42",
-      "name": "Supprimer compte",
-      "credentials": {
-        "postgres": {
-          "id": "umwZAJ2AeT3uxVx8",
-          "name": "POSTGRES_PERSONA"
-        }
-      }
+      "name": "Supprimer compte"
     },
     {
       "parameters": {
@@ -1096,11 +1026,107 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2416,
-        1312
+        2912,
+        1344
       ],
       "id": "bf0b08de-dceb-4553-8d73-5f70a385b393",
       "name": "Réponse préférence"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Nœud Postgres « Compter messages » (Execute Query) — limite de messages vers le LLM\n-- Query Parameters : {{ [$json.user_id] }}\nWITH purge AS (\n  DELETE FROM audit_log WHERE action = 'chat' AND at < now() - interval '2 minutes'\n), ins AS (\n  INSERT INTO audit_log (user_id, action) VALUES ($1, 'chat')\n)\nSELECT (count(*) + 1)::int AS recent\nFROM audit_log\nWHERE user_id = $1 AND action = 'chat' AND at > now() - interval '1 minute';",
+        "options": {
+          "queryReplacement": "={{ [$json.user_id] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.8,
+      "position": [
+        1744,
+        1312
+      ],
+      "id": "7735d69e-cee2-455a-9679-f006688d9209",
+      "name": "Compter message"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "f7afa512-989c-4e34-866b-bbc614ff5915",
+              "leftValue": "={{ $json.recent }}",
+              "rightValue": 5,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        1968,
+        1312
+      ],
+      "id": "c120102c-99c2-4238-8c9b-b043e6d1ef84",
+      "name": "Trop de message  ?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fa98ccca-6881-46f5-9929-3e5d46b1f16f",
+              "name": "output",
+              "value": "Doucement ! Tu as envoyé trop de messages, réessaie dans 1 minute.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2192,
+        1184
+      ],
+      "id": "41993f5d-be7b-41bd-8605-4cf51bcbf3dd",
+      "name": "msg Doucement"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e58f0b55-0e1d-4951-8a5d-fb9ed461ce3a",
+              "name": "output",
+              "value": "Le llm est indisponible pour le moment, réessayez dans quelques minutes",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2496,
+        1568
+      ],
+      "id": "b6f1369a-968b-46ed-99b9-dff360fbfa97",
+      "name": "msg LLM indisponible"
     }
   ],
   "pinData": {},
@@ -1349,6 +1375,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "msg LLM indisponible",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -1413,7 +1446,7 @@
         ],
         [
           {
-            "node": "Extraire préférence",
+            "node": "Compter message",
             "type": "main",
             "index": 0
           }
@@ -1474,6 +1507,35 @@
           }
         ]
       ]
+    },
+    "Compter message": {
+      "main": [
+        [
+          {
+            "node": "Trop de message  ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trop de message  ?": {
+      "main": [
+        [
+          {
+            "node": "msg Doucement",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extraire préférence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -1481,10 +1543,9 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "ea29409c-a038-4015-b2fc-151f2bf99d06",
+  "versionId": "aba07b53-8e62-45c9-bb1a-81ad5432aec6",
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "f759c8d61638adda5da2caf28408f3598cbfe088241fbb352d7ef3d026f764be"
+    "templateCredsSetupCompleted": true
   },
   "nodeGroups": [],
   "id": "qwhLUr8GmwlFgqtE",
