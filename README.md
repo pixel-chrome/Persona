@@ -63,7 +63,7 @@ Après l'import, ouvrir chaque workflow, rattacher les credentials (section 3), 
 | `POSTGRES_PERSONA` | Postgres | Host `postgres`, port `5432`, database `persona`, user/password = valeurs du `.env` |
 | `SMTP_PERSONA` | SMTP | Gmail : host `smtp.gmail.com`, port `465`, SSL activé, user = adresse Gmail, password = mot de passe d'application |
 | `LLM_PERSONA` | Google Gemini(PaLM) Api | Clé API Google AI Studio, host par défaut. Modèle : `gemini-3.5-flash-lite` (offre gratuite : 15 requêtes/min, 500/jour) |
-| Clé API news | **[À COMPLÉTER]** | Si une API de news est utilisée (les flux RSS n'en demandent pas) |
+| `ASK_NEWS_API_KEY` | clef API | clef API pour AskNews |
 
 ## 4. Utiliser Persona via le chatbot
 

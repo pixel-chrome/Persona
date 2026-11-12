@@ -1,5 +1,5 @@
 {
-  "name": "fetch_news",
+  "name": "03fetch",
   "nodes": [
     {
       "parameters": {},
@@ -7,7 +7,7 @@
       "typeVersion": 1,
       "position": [
         -272,
-        16
+        112
       ],
       "id": "eed36b09-b7b7-4f08-9523-83d590de1ad7",
       "name": "When clicking ‘Execute workflow’"
@@ -39,8 +39,8 @@
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2.4,
       "position": [
-        848,
-        16
+        1072,
+        112
       ],
       "id": "18c63116-4bb2-426c-b567-274805224f48",
       "name": "Filter"
@@ -53,7 +53,7 @@
       "type": "n8n-nodes-base.rssFeedRead",
       "typeVersion": 1.2,
       "position": [
-        -48,
+        176,
         -80
       ],
       "id": "23762aa7-dd4b-4f86-baab-94704ed04413",
@@ -68,7 +68,7 @@
       "type": "n8n-nodes-base.rssFeedRead",
       "typeVersion": 1.2,
       "position": [
-        -48,
+        176,
         112
       ],
       "id": "a997648c-0402-458f-9107-b89f1fabcca8",
@@ -81,7 +81,7 @@
           "assignments": [
             {
               "id": "6222469a-3715-49d2-a545-f16eb5981972",
-              "name": "title",
+              "name": "titre",
               "value": "={{ $json.title }}",
               "type": "string"
             },
@@ -119,7 +119,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        176,
+        400,
         -80
       ],
       "id": "7b74b1d0-6266-498f-b91e-c9af868095f3",
@@ -132,7 +132,7 @@
           "assignments": [
             {
               "id": "6222469a-3715-49d2-a545-f16eb5981972",
-              "name": "title",
+              "name": "titre",
               "value": "={{ $json.title }}",
               "type": "string"
             },
@@ -170,7 +170,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        176,
+        400,
         112
       ],
       "id": "04c6ab0a-1888-4c3e-950e-a9a0c2f232fc",
@@ -178,12 +178,14 @@
       "alwaysOutputData": true
     },
     {
-      "parameters": {},
+      "parameters": {
+        "numberInputs": 3
+      },
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        400,
-        16
+        624,
+        96
       ],
       "id": "4c57bad8-9c96-4acf-b0ab-a7a8cf336a08",
       "name": "Merge"
@@ -197,11 +199,116 @@
       "type": "n8n-nodes-base.removeDuplicates",
       "typeVersion": 2,
       "position": [
-        624,
-        16
+        848,
+        112
       ],
       "id": "7139ad86-20b6-4cbc-ba8d-7370e4d1f0f7",
       "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "url": "https://api.asknews.app/v1/news/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "technology"
+            },
+            {
+              "name": "n_articles",
+              "value": "10"
+            },
+            {
+              "name": "hours_back",
+              "value": "24"
+            },
+            {
+              "name": "return_type",
+              "value": "dicts"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -48,
+        304
+      ],
+      "id": "2900c20e-cddf-4337-81ca-d7debabf1052",
+      "name": "API_AskNews",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "MomRBAgMxlog0Smc",
+          "name": "AskNews_API_Persona"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "as_dicts",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1.1,
+      "position": [
+        176,
+        304
+      ],
+      "id": "6d5b196b-e2ba-42d2-9964-b035a4961cdf",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4cbd721a-14db-4dea-bf18-a328f0ca42b3",
+              "name": "titre",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "90a31b69-a326-4275-9426-71a7e23e8b21",
+              "name": "url",
+              "value": "={{ $json.article_url }}",
+              "type": "string"
+            },
+            {
+              "id": "e40a27c6-2287-4ce8-bedc-5d9b0be2566b",
+              "name": "source",
+              "value": "AskNews",
+              "type": "string"
+            },
+            {
+              "id": "ec2b2c46-f567-48e8-9c49-87cd4abc3fe1",
+              "name": "date",
+              "value": "={{ $json.pub_date }}",
+              "type": "string"
+            },
+            {
+              "id": "fe3e2375-d502-4498-a346-3c49a4d1e0dc",
+              "name": "extrait",
+              "value": "={{ $json.summary }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        400,
+        304
+      ],
+      "id": "c3c64f0c-d0c1-49fa-88a3-2bb299ad9655",
+      "name": "Format_AskNews"
     }
   ],
   "pinData": {},
@@ -211,6 +318,11 @@
         [
           {
             "node": "RSS_BBC",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "API_AskNews",
             "type": "main",
             "index": 0
           },
@@ -287,6 +399,39 @@
           }
         ]
       ]
+    },
+    "API_AskNews": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Format_AskNews",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format_AskNews": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -294,7 +439,10 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "84bf4c0f-1869-47c1-b050-cd5deba446c2",
+  "versionId": "e9d455fb-d385-4ea5-ae09-3c3bc2d3ca44",
+  "meta": {
+    "instanceId": "f759c8d61638adda5da2caf28408f3598cbfe088241fbb352d7ef3d026f764be"
+  },
   "nodeGroups": [],
   "id": "1d1r3NH7op0wo3sP",
   "tags": []
