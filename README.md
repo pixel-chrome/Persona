@@ -24,6 +24,7 @@ Dans `.env`, remplacer **toutes** les valeurs `change_me` (générer un secret :
 | `POSTGRES_USER` | Compte PostgreSQL (utilisé par N8N et les workflows) |
 | `POSTGRES_PASSWORD` | Mot de passe de ce compte |
 | `N8N_ENCRYPTION_KEY` | Chiffre les credentials dans N8N. À conserver : la perdre rend les credentials illisibles |
+| `SMTP_FROM` | Adresse expéditrice des emails (celle du compte SMTP) |
 
 Démarrer :
 
@@ -60,27 +61,38 @@ Après l'import, ouvrir chaque workflow, rattacher les credentials (section 3), 
 | Nom | Type | À renseigner |
 |---|---|---|
 | `POSTGRES_PERSONA` | Postgres | Host `postgres`, port `5432`, database `persona`, user/password = valeurs du `.env` |
-| `SMTP_PERSONA` | SMTP | Serveur, port, utilisateur et mot de passe de votre fournisseur d'envoi (ex. Gmail avec mot de passe d'application) |
-| `LLM_PERSONA` | Selon le modèle choisi | Clé API de GEMINI|
+| `SMTP_PERSONA` | SMTP | Gmail : host `smtp.gmail.com`, port `465`, SSL activé, user = adresse Gmail, password = mot de passe d'application |
+| `LLM_PERSONA` | Google Gemini(PaLM) Api | Clé API Google AI Studio, host par défaut. Modèle : `gemini-3.5-flash-lite` (offre gratuite : 15 requêtes/min, 500/jour) |
 | Clé API news | **[À COMPLÉTER]** | Si une API de news est utilisée (les flux RSS n'en demandent pas) |
 
 ## 4. Utiliser Persona via le chatbot
 
-Ouvrir le chat : dans N8N, ouvrir `01chat.json` puis **Open chat**.
+Ouvrir `01chat.json` dans N8N puis **Open chat**.
 
-Connexion (sans mot de passe, par code email) :
+Première utilisation : `/connexion`, puis `/code`, puis `/accepte`. Ensuite, les préférences se donnent en langage libre.
 
-1. `/connexion ton@email.com` : un code à 6 chiffres est envoyé par email (valable 10 min, 1 envoi par minute max).
-2. `/code 123456` : valide le code. Le compte est créé à la première validation, ce qui vaut consentement (RGPD).
-   Après 5 essais ratés, le code est invalidé.
+| Commande | À mettre après | Session | Consentement | Effet |
+|---|---|---|---|---|
+| `/connexion` | une adresse email | non | non | Envoie un code à 6 chiffres, valable 10 min (un envoi par minute) |
+| `/code` | les 6 chiffres reçus | non | non | Ouvre une session de 24 h. Code invalidé après 5 essais ratés |
+| `/accepte` | rien | oui | non | Donne son consentement (le bot affiche avant quelles données sont stockées) |
+| `/mesdonnees` | rien | oui | non | Affiche toutes les données stockées sur soi |
+| `/stop` | rien | oui | oui | Arrête l'envoi de la newsletter (`stop` seul marche aussi) |
+| `/reprendre` | rien | oui | oui | Relance l'envoi |
+| `/supprimer` | rien | oui | non | Affiche un avertissement, ne supprime rien |
+| `/supprimer confirmer` | rien | oui | non | Supprime le compte et toutes ses données |
+| `/logout` | rien | oui | non | Ferme la session |
+| texte libre | des sujets, une heure, une ville | oui | oui | Enregistre les préférences, max 5 messages par minute |
 
-Ensuite, en langage libre **[À COMPLÉTER : à confirmer avec le workflow final]** :
+Exemples : `/connexion moi@exemple.fr`, `/code 482913`.
 
-- Donner ses sujets : « je veux des news sur le volley et l'IA »
-- Choisir le créneau : « envoie-la chaque matin vers 8h »
-- Demander une newsletter
-- Se désinscrire : « stop »
-- Voir ses données / supprimer ses données
+Exemples de texte libre :
+
+- « je veux des news cyber et volley »
+- « à 8h, heure de Paris »
+- « qu'est-ce que tu as sur moi ? »
+
+Le bot redemande ce qui manque. Sans ville, le fuseau est UTC. Une nouvelle liste de sujets remplace l'ancienne. Une commande mal écrite ou inconnue est refusée avec un message d'aide, elle n'est jamais envoyée au LLM.
 
 ## 5. Tester rapidement un envoi planifié
 
@@ -96,20 +108,31 @@ Pour forcer un envoi immédiat sans attendre : **[À COMPLÉTER : mode test du w
 
 ## 6. Sécurité
 
-- Le chat est le seul point d'entrée.
-- Codes et tokens de session sont stockés **hachés** (SHA-256), jamais en clair.
-- Requêtes SQL paramétrées (pas de concaténation de texte utilisateur).
-- Chaque action utilise l'identité issue de la session, jamais un identifiant donné dans le texte du chat.
-- Limites : message de 500 caractères max, codes expirants, anti-spam et anti-brute-force sur la connexion.
-- Les commandes `/connexion` et `/code` ne sont jamais transmises au LLM.
-- Tests d'attaque et résultats : **[À COMPLÉTER]**.
+- Le chat est le seul point d'entrée. Hors `/connexion` et `/code`, chaque message passe par une session vérifiée.
+- Codes et tokens de session sont stockés hachés (SHA-256).
+- Requêtes SQL paramétrées.
+- L'identité vient de la session, jamais du texte du chat.
+- Le LLM ne fait qu'extraire un JSON (sujets, heure, fuseau). Il n'a accès ni à la base ni aux données des utilisateurs, et sa sortie est revérifiée par un nœud Code avant d'être enregistrée. Les commandes ne lui sont jamais envoyées.
+- Limites : 500 caractères par message, 5 messages par minute vers le LLM, un code par minute, 5 essais par code.
+- Les erreurs techniques (quota du LLM, etc.) ne sont pas montrées à l'utilisateur.
+
+Tests d'attaque et limites connues : [doc/tests_securite.md](doc/tests_securite.md).
 
 ## 7. RGPD
 
-- **Données stockées** : email, sujets, créneau, fuseau, historique des envois, journal d'audit. Rien d'autre.
-- **Finalité** : envoyer la newsletter demandée.
-- **Consentement** : horodaté (`consent_at`) à la validation du code email.
-- **Désinscription** : « stop » dans le chat et lien dans chaque email **[À COMPLÉTER]**.
-- **Effacement** : « supprime mes données » supprime le compte et ses données liées (sessions, préférences, historique). Le journal d'audit est conservé sans lien vers la personne.
-- **Accès** : « montre-moi ce que tu stockes sur moi ».
-- **Durée de conservation** : **[À COMPLÉTER]**.
+- Données stockées : email, sujets, heure et fuseau d'envoi, historique des envois, journal d'audit.
+- Finalité : envoyer la newsletter demandée. Rien n'est partagé.
+- Consentement : explicite avec `/accepte`, horodaté dans `consent_at`. Aucune préférence n'est enregistrée avant.
+- Accès : `/mesdonnees`.
+- Désinscription : `/stop` dans le chat (`/reprendre` pour revenir). Lien dans chaque email **[À COMPLÉTER]**.
+- Effacement : `/supprimer confirmer` supprime le compte, les sessions, les préférences, l'historique et les codes en attente. Le journal d'audit garde l'action, sans lien vers la personne.
+
+Durées de conservation :
+
+| Donnée | Durée |
+|---|---|
+| Code de connexion (et l'email associé, avant consentement) | 10 min |
+| Session | 24 h |
+| Compteur de messages | 2 min |
+| Logs d'exécution N8N (erreurs et tests lancés depuis l'éditeur) | 24 h |
+| Compte et préférences | Jusqu'à `/supprimer confirmer` |
