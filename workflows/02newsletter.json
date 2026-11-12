@@ -1,0 +1,176 @@
+{
+  "name": "02newsletter",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        192
+      ],
+      "id": "f82ae818-a317-4a80-9f39-6c43406e8fb2",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "30361547-81b4-4b41-96dc-cc268d8bcf45",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT u.id, u.email, p.topics, p.language, p.custom_prompt, p.timezone\nFROM users u\nJOIN preferences p ON p.user_id = u.id\nWHERE u.unsubscribed = false\n  AND u.consent_at IS NOT NULL\n  AND p.send_time IS NOT NULL\n  AND (now() AT TIME ZONE p.timezone)::time >= p.send_time\n  AND (now() AT TIME ZONE p.timezone)::time <  p.send_time + interval '5 minutes'\n  AND NOT EXISTS (\n    SELECT 1 FROM sent_log s\n    WHERE s.user_id = u.id\n      AND (s.sent_at AT TIME ZONE p.timezone)::date = (now() AT TIME ZONE p.timezone)::date\n  );",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.8,
+      "position": [
+        224,
+        96
+      ],
+      "id": "fd266625-d07e-4ac2-9e17-e481b32ecda7",
+      "name": "Users_a_servir",
+      "credentials": {
+        "postgres": {
+          "id": "UWUrIoj44BXGU0Ah",
+          "name": "POSTGRES_PERSONA"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        448,
+        96
+      ],
+      "id": "2cf5e6fd-c6fc-44c1-9489-1158a70eee3b",
+      "name": "Un_seul_appel"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "qZTxJsabVA73WtUH",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/qZTxJsabVA73WtUH",
+          "cachedResultName": "03fetch"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        672,
+        96
+      ],
+      "id": "e69fd61f-5098-4f36-ac99-efda49038175",
+      "name": "Execute_03fetch"
+    }
+  ],
+  "pinData": {
+    "Users_a_servir": [
+      {
+        "json": {
+          "id": 2,
+          "email": "factice@example.com",
+          "topics": [
+            "technology",
+            "ia"
+          ],
+          "language": "fr",
+          "custom_prompt": null,
+          "timezone": "Europe/Paris"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Users_a_servir",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Users_a_servir",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Users_a_servir": {
+      "main": [
+        [
+          {
+            "node": "Un_seul_appel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Un_seul_appel": {
+      "main": [
+        [
+          {
+            "node": "Execute_03fetch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f8fc77ad-826a-4d9e-a554-a5c71539b7df",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f759c8d61638adda5da2caf28408f3598cbfe088241fbb352d7ef3d026f764be"
+  },
+  "nodeGroups": [],
+  "id": "l8MOYQoZrPCaoZ4T",
+  "tags": []
+}

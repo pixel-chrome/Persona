@@ -60,3 +60,12 @@ CREATE TABLE audit_log (
     action   TEXT NOT NULL,                                   -- ex: 'login_ok', 'login_fail', 'delete_account'
     at       TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- ⚠ FAUX UTILISATEUR DE TEST — il n'existe pas : adresse fictive (example.com, domaine réservé
+-- aux exemples), aucune donnée personnelle. Sert uniquement à tester 02newsletter.
+-- À SUPPRIMER avant le rendu final (ou à déplacer dans un fichier de test séparé).
+INSERT INTO users (email, consent_at) VALUES ('factice@example.com', now());
+
+INSERT INTO preferences (user_id, topics, send_time, timezone, language)
+SELECT id, jsonb_build_array('technology', 'ia'), '08:00', 'Europe/Paris', 'fr'
+FROM users WHERE email = 'factice@example.com';
