@@ -20,6 +20,9 @@ Tests joués dans le chat n8n. Les contrôles sont faits dans les nœuds Code et
 | 14 | Préférences sans consentement | sujets avant `/accepte` | message RGPD | Router | OK |
 | 15 | Suppression involontaire | `ne supprime surtout pas mes données` | rien supprimé | suppression en 2 commandes | OK |
 | 16 | Effacement complet | `/supprimer confirmer` | 0 ligne en base | cascade + login_codes | OK |
+| 17 | Spam du chat | 6 messages en moins d'1 min | 6e refusé | 5 messages/min vers le LLM | OK |
+| 18 | LLM indisponible | quota Gemini dépassé | message propre, pas d'erreur technique | sortie d'erreur d'Extraire préférences | OK |
+
 Vérification du test 16 :
 
 ```bash
@@ -28,7 +31,6 @@ docker compose exec postgres sh -c 'psql -U "$POSTGRES_USER" -d persona -c "SELE
 
 ## Limites connues
 
-- Pas de limite de messages par utilisateur : un compte connecté peut consommer le quota du LLM.
 - `/connexion` avec l'email d'un autre remplace son code en attente (pas d'accès au compte, mais gênant).
 - Brute force lent possible : 5 essais par code, un code par minute.
 - `$env` est lisible depuis les nœuds : risque limité aux personnes qui peuvent éditer le workflow.
