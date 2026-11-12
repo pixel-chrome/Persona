@@ -6,8 +6,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -272,
-        112
+        -320,
+        -80
       ],
       "id": "eed36b09-b7b7-4f08-9523-83d590de1ad7",
       "name": "When clicking ‘Execute workflow’"
@@ -39,7 +39,7 @@
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2.4,
       "position": [
-        1072,
+        1024,
         112
       ],
       "id": "18c63116-4bb2-426c-b567-274805224f48",
@@ -53,7 +53,7 @@
       "type": "n8n-nodes-base.rssFeedRead",
       "typeVersion": 1.2,
       "position": [
-        176,
+        -96,
         -80
       ],
       "id": "23762aa7-dd4b-4f86-baab-94704ed04413",
@@ -68,7 +68,7 @@
       "type": "n8n-nodes-base.rssFeedRead",
       "typeVersion": 1.2,
       "position": [
-        176,
+        -96,
         112
       ],
       "id": "a997648c-0402-458f-9107-b89f1fabcca8",
@@ -119,7 +119,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        400,
+        128,
         -80
       ],
       "id": "7b74b1d0-6266-498f-b91e-c9af868095f3",
@@ -170,7 +170,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        400,
+        128,
         112
       ],
       "id": "04c6ab0a-1888-4c3e-950e-a9a0c2f232fc",
@@ -184,7 +184,7 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        624,
+        576,
         96
       ],
       "id": "4c57bad8-9c96-4acf-b0ab-a7a8cf336a08",
@@ -199,7 +199,7 @@
       "type": "n8n-nodes-base.removeDuplicates",
       "typeVersion": 2,
       "position": [
-        848,
+        800,
         112
       ],
       "id": "7139ad86-20b6-4cbc-ba8d-7370e4d1f0f7",
@@ -236,7 +236,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        -48,
+        -96,
         304
       ],
       "id": "2900c20e-cddf-4337-81ca-d7debabf1052",
@@ -257,7 +257,7 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1.1,
       "position": [
-        176,
+        128,
         304
       ],
       "id": "6d5b196b-e2ba-42d2-9964-b035a4961cdf",
@@ -304,11 +304,24 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        400,
+        352,
         304
       ],
       "id": "c3c64f0c-d0c1-49fa-88a3-2bb299ad9655",
       "name": "Format_AskNews"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -320,
+        304
+      ],
+      "id": "0a46f74a-bb5a-4247-97d0-289fa323cadd",
+      "name": "When Executed by Another Workflow"
     }
   ],
   "pinData": {},
@@ -432,6 +445,27 @@
           }
         ]
       ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "RSS_BBC",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS_LeMonde",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "API_AskNews",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -439,7 +473,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "e9d455fb-d385-4ea5-ae09-3c3bc2d3ca44",
+  "versionId": "e2f21928-1ed2-4317-86e9-07b378cb7844",
   "meta": {
     "instanceId": "f759c8d61638adda5da2caf28408f3598cbfe088241fbb352d7ef3d026f764be"
   },
