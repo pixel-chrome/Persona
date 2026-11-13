@@ -6,44 +6,11 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -320,
-        -80
+        0,
+        0
       ],
-      "id": "eed36b09-b7b7-4f08-9523-83d590de1ad7",
+      "id": "8736f866-098c-4e3f-8fe8-0015fa48b97d",
       "name": "When clicking ‘Execute workflow’"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 4
-          },
-          "conditions": [
-            {
-              "id": "3081fcb7-e354-4826-a1fc-e7fed5aa3dfa",
-              "leftValue": "={{ DateTime.fromISO($json.date) }}",
-              "rightValue": "={{ $now.minus({ hours: 24 }) }}",
-              "operator": {
-                "type": "dateTime",
-                "operation": "after"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.filter",
-      "typeVersion": 2.4,
-      "position": [
-        1024,
-        112
-      ],
-      "id": "18c63116-4bb2-426c-b567-274805224f48",
-      "name": "Filter"
     },
     {
       "parameters": {
@@ -53,10 +20,10 @@
       "type": "n8n-nodes-base.rssFeedRead",
       "typeVersion": 1.2,
       "position": [
-        -96,
-        -80
+        224,
+        0
       ],
-      "id": "23762aa7-dd4b-4f86-baab-94704ed04413",
+      "id": "b4052931-21f1-4a67-b5aa-9b0217c98084",
       "name": "RSS_BBC",
       "onError": "continueErrorOutput"
     },
@@ -68,10 +35,10 @@
       "type": "n8n-nodes-base.rssFeedRead",
       "typeVersion": 1.2,
       "position": [
-        -96,
-        112
+        224,
+        192
       ],
-      "id": "a997648c-0402-458f-9107-b89f1fabcca8",
+      "id": "be8fdb43-7ce1-45af-a55f-f404770ddf39",
       "name": "RSS_LeMonde",
       "onError": "continueErrorOutput"
     },
@@ -119,10 +86,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        128,
-        -80
+        448,
+        0
       ],
-      "id": "7b74b1d0-6266-498f-b91e-c9af868095f3",
+      "id": "ea7e56dd-5777-4591-96e0-e4b1f669bc82",
       "name": "Format_BBC",
       "alwaysOutputData": true
     },
@@ -170,10 +137,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        128,
-        112
+        448,
+        192
       ],
-      "id": "04c6ab0a-1888-4c3e-950e-a9a0c2f232fc",
+      "id": "6d7f34a0-2b88-44c1-bdd1-e16790795f2a",
       "name": "Format_LeMonde",
       "alwaysOutputData": true
     },
@@ -184,10 +151,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        576,
-        96
+        896,
+        176
       ],
-      "id": "4c57bad8-9c96-4acf-b0ab-a7a8cf336a08",
+      "id": "7ace478d-8422-49f5-9539-68a92e68841f",
       "name": "Merge"
     },
     {
@@ -199,10 +166,10 @@
       "type": "n8n-nodes-base.removeDuplicates",
       "typeVersion": 2,
       "position": [
-        800,
-        112
+        1120,
+        192
       ],
-      "id": "7139ad86-20b6-4cbc-ba8d-7370e4d1f0f7",
+      "id": "abe83c65-5f4a-40a8-8a1e-d4d7245fef69",
       "name": "Remove Duplicates"
     },
     {
@@ -236,14 +203,14 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        -96,
-        304
+        224,
+        384
       ],
-      "id": "2900c20e-cddf-4337-81ca-d7debabf1052",
+      "id": "f4e35a35-7839-4d90-92f6-e31d8fb80e16",
       "name": "API_AskNews",
       "credentials": {
         "httpHeaderAuth": {
-          "id": "MomRBAgMxlog0Smc",
+          "id": "KyzbyNVEwzXppWUk",
           "name": "AskNews_API_Persona"
         }
       },
@@ -257,10 +224,10 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1.1,
       "position": [
-        128,
-        304
+        448,
+        384
       ],
-      "id": "6d5b196b-e2ba-42d2-9964-b035a4961cdf",
+      "id": "a884f4b3-e208-40f3-9c3e-1fa5d3d63eea",
       "name": "Split Out"
     },
     {
@@ -304,10 +271,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        352,
-        304
+        672,
+        384
       ],
-      "id": "c3c64f0c-d0c1-49fa-88a3-2bb299ad9655",
+      "id": "e616c13f-b112-4a31-9cd1-4ccab0c84751",
       "name": "Format_AskNews"
     },
     {
@@ -317,14 +284,793 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.3,
       "position": [
-        -320,
-        304
+        0,
+        384
       ],
-      "id": "0a46f74a-bb5a-4247-97d0-289fa323cadd",
+      "id": "52418cdb-c7e9-42bc-93fc-e43be279e68c",
       "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "3081fcb7-e354-4826-a1fc-e7fed5aa3dfa",
+              "leftValue": "={{ DateTime.fromISO($json.date) }}",
+              "rightValue": "={{ $now.minus({ hours: 24 }) }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.4,
+      "position": [
+        1344,
+        192
+      ],
+      "id": "4181fe57-1921-4e7d-b7a3-419a65354f06",
+      "name": "Filter_24h"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "a99fad42-185e-4b1a-8eca-237ba7b2f096",
+              "leftValue": "={{ $json.url }}",
+              "rightValue": ".mp3",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.4,
+      "position": [
+        1568,
+        192
+      ],
+      "id": "707f5539-c65a-4da1-bd78-2edfb2191b61",
+      "name": "Filter_mp3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "980891b3-4fd8-4bc8-b88b-1c6a20be7331",
+              "name": "extrait",
+              "value": "={{ ($json.extrait || '').length > 300 ? $json.extrait.slice(0, 300) + '…' : ($json.extrait || '') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1792,
+        192
+      ],
+      "id": "e5d41606-2d00-4f17-9a7a-4240eab46a96",
+      "name": "Edit_extrait"
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "Remove Duplicates": [
+      {
+        "json": {
+          "titre": "What we know about the global outage",
+          "url": "https://www.bbc.co.uk/news/articles/cwvg238zrnm5o?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T09:34:38.000Z",
+          "extrait": "Microsoft has said the outage was not caused by a cyber-security incident, but efforts to fix the issues have so far been largely unsuccessful."
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "titre": "Watch: How Microsoft services went down around the world",
+          "url": "https://www.bbc.co.uk/news/videos/cwm2591k27e2o?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T07:18:17.000Z",
+          "extrait": "Microsoft is struggling to fix a global outage, with services including Teams, Outlook and AI software Copilot affected by \"connectivity problems\"."
+        },
+        "pairedItem": {
+          "item": 1
+        }
+      },
+      {
+        "json": {
+          "titre": "Migrants offered help to fake artworks to gain UK 'talent' visas - BBC investigation finds",
+          "url": "https://www.bbc.co.uk/news/articles/cmkgdw24l1kdo?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T06:00:44.000Z",
+          "extrait": "Going undercover to expose an elaborate fraud aimed at obtaining fast-track settlement for wealthy migrants."
+        },
+        "pairedItem": {
+          "item": 2
+        }
+      },
+      {
+        "json": {
+          "titre": "Asylum centre on military base near Piddington approved",
+          "url": "https://www.bbc.co.uk/news/articles/c58j4798874go?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T08:13:44.000Z",
+          "extrait": "The Home Office's application to house up to 1,256 men at the site near Bicester was fast-tracked."
+        },
+        "pairedItem": {
+          "item": 3
+        }
+      },
+      {
+        "json": {
+          "titre": "Doctor burnout putting maternity patients at risk, says regulator",
+          "url": "https://www.bbc.co.uk/news/articles/ckx28le8dv9wo?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T00:55:31.000Z",
+          "extrait": "Trainee doctors delivering babies are more likely to suffer from overwork and burnout than other specialties, evidence suggests."
+        },
+        "pairedItem": {
+          "item": 4
+        }
+      },
+      {
+        "json": {
+          "titre": "The school where white working-class pupils defy the odds",
+          "url": "https://www.bbc.co.uk/news/articles/cm369259g0j2o?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T00:53:49.000Z",
+          "extrait": "Politicians are worried about the outcomes of white, working-class pupils. But one school in Sunderland seems to have defied gravity"
+        },
+        "pairedItem": {
+          "item": 5
+        }
+      },
+      {
+        "json": {
+          "titre": "Zelensky welcomes US bringing Europe into Russia-Ukraine peace talks",
+          "url": "https://www.bbc.co.uk/news/articles/ckn80j9jv3jxo?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T02:01:35.000Z",
+          "extrait": "The Ukrainian president says it makes sense for European leaders to be involved as Ukraine hopes to eventually join the EU."
+        },
+        "pairedItem": {
+          "item": 6
+        }
+      },
+      {
+        "json": {
+          "titre": "Ex-Nvidia CEO Jensen Huang summoned to testify before Congress about affair with alleged Chinese spy",
+          "url": "https://www.bbc.co.uk/news/articles/cmq5vd1wdgz6o?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T03:57:01.000Z",
+          "extrait": "Huang abruptly quit on Thursday as head of one of the world's most valuable companies after revelations of alleged extramarital affairs."
+        },
+        "pairedItem": {
+          "item": 7
+        }
+      },
+      {
+        "json": {
+          "titre": "How could the Nvidia CEO’s affair threaten US national security?",
+          "url": "https://www.bbc.co.uk/news/videos/cm7526d2qeg4o?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T02:15:59.000Z",
+          "extrait": "BBC's Asma Khalid explains how the Nvidia affair could threaten US national security and risk sensitive US technology getting into China."
+        },
+        "pairedItem": {
+          "item": 8
+        }
+      },
+      {
+        "json": {
+          "titre": "Will the Eurovision Song Contest succeed in Asia?",
+          "url": "https://www.bbc.co.uk/news/videos/cxvg23n59y1ro?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T02:24:11.000Z",
+          "extrait": "The world’s biggest and longest-running song contest is coming to Asia, with eleven countries competing in Bangkok, Thailand on Saturday."
+        },
+        "pairedItem": {
+          "item": 9
+        }
+      },
+      {
+        "json": {
+          "titre": "Brand will face 'hell on earth' in Wandsworth prison, says former inmate",
+          "url": "https://www.bbc.co.uk/news/articles/ck7v25pp19m8o?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T00:15:27.000Z",
+          "extrait": "The disgraced entertainer was sentenced to 10 years and six months for rape and sexual assault."
+        },
+        "pairedItem": {
+          "item": 10
+        }
+      },
+      {
+        "json": {
+          "titre": "The rise of 'housefishing' - when does using AI go from enhancing to misleading?",
+          "url": "https://www.bbc.co.uk/news/articles/cm62y0wrnz9zo?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T00:13:35.000Z",
+          "extrait": "Experts warn that using AI to enhance property images can go too far and mislead prospective buyers."
+        },
+        "pairedItem": {
+          "item": 11
+        }
+      },
+      {
+        "json": {
+          "titre": "Skye Newman gets 'goosebumps' over record-breaking Brixton Academy run",
+          "url": "https://www.bbc.co.uk/news/articles/ckvg25g323ymo?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T00:24:11.000Z",
+          "extrait": "She is the first British female solo singer to play a five-gig residency at the venue."
+        },
+        "pairedItem": {
+          "item": 12
+        }
+      },
+      {
+        "json": {
+          "titre": "Where does record-breaking Kane rank among all-time England greats?",
+          "url": "https://www.bbc.co.uk/sport/football/articles/cxj0lvqpn94qo?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-12T22:09:59.000Z",
+          "extrait": "Harry Kane is England's all-time top scorer and record appearance maker, but where does he rank among the Three Lions' greatest players?"
+        },
+        "pairedItem": {
+          "item": 13
+        }
+      },
+      {
+        "json": {
+          "titre": "Ankle injuries are more common than you think - here's how to protect yours",
+          "url": "https://www.bbc.co.uk/news/articles/c6vgxjevv5v7o?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T00:14:12.000Z",
+          "extrait": "Performance physiotherapist Genevieve Taiwah shares her top tips for looking after your ankles."
+        },
+        "pairedItem": {
+          "item": 14
+        }
+      },
+      {
+        "json": {
+          "titre": "Weekly quiz: Who's joining Wayne Rooney in the I'm A Celebrity jungle?",
+          "url": "https://www.bbc.co.uk/news/articles/cmkgk0w34lkpo?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-12T20:22:21.000Z",
+          "extrait": "How much attention did you pay to what happened in the world over the past seven days?"
+        },
+        "pairedItem": {
+          "item": 15
+        }
+      },
+      {
+        "json": {
+          "titre": "The Papers: 'Nvidia chief quits' and 'Six women say they too were preyed on by Brand'",
+          "url": "https://www.bbc.co.uk/news/articles/cm702zql1l0lo?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T04:36:28.000Z",
+          "extrait": "The resignation of Jensen Huang following reports he had an affair with a suspected spy leads a number Friday's papers."
+        },
+        "pairedItem": {
+          "item": 16
+        }
+      },
+      {
+        "json": {
+          "titre": "Burnham says 'win-win' deal can be agreed between UK and EU",
+          "url": "https://www.bbc.co.uk/news/articles/cm2l5n07l87vo?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T01:17:58.000Z",
+          "extrait": "The prime minister says the deal could be \"more like the Brexit people thought they were voting for\" in 2016."
+        },
+        "pairedItem": {
+          "item": 17
+        }
+      },
+      {
+        "json": {
+          "titre": "MI5 will need proof to be believed in future, says Leveson after BBC investigation",
+          "url": "https://www.bbc.co.uk/news/articles/c98r7dlj6v2go?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T00:54:50.000Z",
+          "extrait": "The BBC exposed how the security service had lied to three courts concerning Agent X."
+        },
+        "pairedItem": {
+          "item": 18
+        }
+      },
+      {
+        "json": {
+          "titre": "Timothée Chalamet and Zendaya prank Rylan Clark for Children in Need",
+          "url": "https://www.bbc.co.uk/news/articles/cqly4lnxn031o?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T00:54:04.000Z",
+          "extrait": "Viewers of the annual TV charity event will see the actor playing a prank on Rylan."
+        },
+        "pairedItem": {
+          "item": 19
+        }
+      },
+      {
+        "json": {
+          "titre": "Blink-182 to make Download debut as 2027 festival headliners",
+          "url": "https://www.bbc.co.uk/news/articles/cm62pd078kk7o?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T07:49:40.000Z",
+          "extrait": "Evanescence and Bring Me The Horizon will also top the bill at the rock and metal festival."
+        },
+        "pairedItem": {
+          "item": 20
+        }
+      },
+      {
+        "json": {
+          "titre": "England thrashed by Australia in first one day international",
+          "url": "https://www.bbc.co.uk/sport/cricket/articles/c6rrg52pvjpko?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T09:31:34.000Z",
+          "extrait": "England meekly offer Australia respite from the ongoing sandpaper scandal by being bowled out for 131 in the first one-day international in Perth."
+        },
+        "pairedItem": {
+          "item": 21
+        }
+      },
+      {
+        "json": {
+          "titre": "African Miss Universe beauty queens in limbo as US visa restrictions bite",
+          "url": "https://www.bbc.co.uk/news/articles/cklyw3neqg2wo?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T07:01:43.000Z",
+          "extrait": "Hall has been seeking a US visa in South Africa as other African beauty queens face similar hurdles."
+        },
+        "pairedItem": {
+          "item": 22
+        }
+      },
+      {
+        "json": {
+          "titre": "Police officers sacked for 'despicable' on-duty filming of vulnerable people",
+          "url": "https://www.bbc.co.uk/news/articles/c52e8kdp2kjzo?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T00:05:14.000Z",
+          "extrait": "The behaviour of the two male officers is branded \"utterly despicable\" by the police ombudsman."
+        },
+        "pairedItem": {
+          "item": 23
+        }
+      },
+      {
+        "json": {
+          "titre": "Download now",
+          "url": "https://www.bbc.co.uk/news/10628994?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2025-04-30T14:04:28.000Z",
+          "extrait": "Top stories, breaking news, live reporting, and follow news topics that match your interests"
+        },
+        "pairedItem": {
+          "item": 24
+        }
+      },
+      {
+        "json": {
+          "titre": "Are Under-25s About to Lose Sickness Benefits?",
+          "url": "https://www.bbc.co.uk/sounds/play/p0pm3s8y?at_mid=8p9AcX1WWS&at_campaign=Newscast_Are_Under_25s_About_to_Lose_Sickness_Benefits_news_rail&at_medium=display_ad&at_campaign_type=owned&at_nation=NET&at_audience_id=SS&at_product=sounds&at_brand=p05299nl&at_ptr_name=bbc&at_ptr_type=media&at_format=image&at_objective=consumption&at_link_title=Newscast_Are_Under_25s_About_to_Lose_Sickness_Benefits_news_rail&at_bbc_team=BBC&at_creation=News",
+          "source": "BBC",
+          "date": "2026-10-25T00:00:00.000Z",
+          "extrait": "The BBC’s daily news podcast with episodes available Monday to Sunday at 5pm."
+        },
+        "pairedItem": {
+          "item": 25
+        }
+      },
+      {
+        "json": {
+          "titre": "The mammoth effort to entomb the ruins of the Chernobyl nuclear power plant",
+          "url": "https://www.bbc.co.uk/iplayer/episode/b08650s6?at_mid=gEXl0ndPjx&at_campaign=Inside_Chernobyls_Mega_Tomb&at_medium=display_ad&at_campaign_type=owned&at_nation=NET&at_audience_id=SS&at_product=iplayer&at_brand=b08650s6&at_ptr_name=bbc&at_ptr_type=media&at_format=image&at_objective=consumption&at_link_title=Inside_Chernobyls_Mega_Tomb&at_bbc_team=BBC",
+          "source": "BBC",
+          "date": "2026-01-07T22:00:23.000Z",
+          "extrait": "Film following the team racing to entomb the ruins of the Chernobyl nuclear power plant."
+        },
+        "pairedItem": {
+          "item": 26
+        }
+      },
+      {
+        "json": {
+          "titre": "How Ferguson-inspired Pochettino can succeed where Carrick failed at Man Utd",
+          "url": "https://www.bbc.co.uk/sport/football/articles/cm2kljzkw77ko?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T09:24:45.000Z",
+          "extrait": "With Mauricio Pochettino set to become Man Utd manager, we analyse if he can clear the tactical hurdles others haven't."
+        },
+        "pairedItem": {
+          "item": 28
+        }
+      },
+      {
+        "json": {
+          "titre": "Whatever happened to the diamond that went missing in F1 crash?",
+          "url": "https://www.bbc.co.uk/sport/formula1/articles/c60735md0jrpo?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T06:12:20.000Z",
+          "extrait": "Whatever happened to the diamond that went missing after the Formula 1 car it was attached to crashed?"
+        },
+        "pairedItem": {
+          "item": 30
+        }
+      },
+      {
+        "json": {
+          "titre": "'Wrong' and 'nonsense' - Cummins on Khawaja sandpaper claims",
+          "url": "https://www.bbc.co.uk/sport/cricket/articles/cwq6e4y9525mo?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T04:26:57.000Z",
+          "extrait": "Australia captain Pat Cummins hits back at former team-mate Usman Khawaja’s claims over the sandpaper scandal, calling them “100% wrong” and “utter nonsense”."
+        },
+        "pairedItem": {
+          "item": 31
+        }
+      },
+      {
+        "json": {
+          "titre": "Liverpool and Van Dijk have a decision to make",
+          "url": "https://www.bbc.co.uk/sport/football/articles/ck4gnd2pgd06o?at_medium=RSS&at_campaign=rss",
+          "source": "BBC",
+          "date": "2026-11-13T06:57:25.000Z",
+          "extrait": "Virgil van Dijk says he is in no panic about his contract situation at Liverpool - BBC Sport takes a look at what could happen with his future."
+        },
+        "pairedItem": {
+          "item": 32
+        }
+      },
+      {
+        "json": {
+          "titre": "Présidentielle 2027 : l’offensive illibérale de Marine Le Pen",
+          "url": "https://www.lemonde.fr/politique/article/2026/11/13/presidentielle-2027-l-offensive-illiberale-de-marine-le-pen_6809272_823448.html",
+          "source": "LeMonde",
+          "date": "2026-11-13T04:29:17.000Z",
+          "extrait": "Associations, syndicats, magistrats, journalistes : les dirigeants du Rassemblement national multiplient les attaques publiques contre les corps intermédiaires, les institutions et les organisations civiles susceptibles de les critiquer."
+        },
+        "pairedItem": {
+          "item": 33
+        }
+      },
+      {
+        "json": {
+          "titre": "En Cisjordanie occupée, la routine des attaques, des violences et des spoliations",
+          "url": "https://www.lemonde.fr/international/article/2026/11/13/en-cisjordanie-occupee-la-routine-des-attaques-des-violences-et-des-spoliations_6809298_3210.html",
+          "source": "LeMonde",
+          "date": "2026-11-13T09:00:14.000Z",
+          "extrait": "Alors que les élections législatives israéliennes du 27 octobre n’ont pas dégagé de majorité claire, la situation continue de se dégrader dans le territoire palestinien, où les colons et l’armée multiplient les exactions."
+        },
+        "pairedItem": {
+          "item": 34
+        }
+      },
+      {
+        "json": {
+          "titre": "Mouvement lycéen : le risque du « pourrissement » de la situation pour les établissements mobilisés",
+          "url": "https://www.lemonde.fr/societe/article/2026/11/13/mouvement-lyceen-entre-blocages-persistants-et-montee-des-violences-les-lycees-mobilises-face-a-la-crainte-d-une-situation-inextricable_6809270_3224.html",
+          "source": "LeMonde",
+          "date": "2026-11-13T04:00:29.000Z",
+          "extrait": "Si la mobilisation s’est resserrée, elle gagne en intensité dans certains établissements. Alors que les tensions augmentent et que les faits de violence se multiplient, l’inquiétude monte chez les enseignants, les proviseurs et les parents."
+        },
+        "pairedItem": {
+          "item": 35
+        }
+      },
+      {
+        "json": {
+          "titre": "Panne mondiale d’Outlook : Microsoft écarte une attaque et constate de premiers « résultats positifs »",
+          "url": "https://www.lemonde.fr/pixels/article/2026/11/13/une-panne-mondiale-d-outlook-empeche-des-dizaines-de-milliers-d-utilisateurs-d-acceder-a-leurs-e-mails_6809171_4408996.html",
+          "source": "LeMonde",
+          "date": "2026-11-12T23:36:49.000Z",
+          "extrait": "La perturbation, qui est toujours en cours dans des dizaines de pays, affecte également Teams et Copilot. L’entreprise ne s’avance pas encore sur un délai de rétablissement complet, et justifie la panne par une « charge élevée » sur l’infrastructure du groupe."
+        },
+        "pairedItem": {
+          "item": 36
+        }
+      },
+      {
+        "json": {
+          "titre": "Guerre en Ukraine : les émissaires de Donald Trump admettent la nécessité de voir les Européens associés aux négociations de paix",
+          "url": "https://www.lemonde.fr/international/article/2026/11/13/guerre-en-ukraine-les-emissaires-americains-assurent-que-les-europeens-seront-associes-aux-prochaines-reunions-de-negociation-de-paix_6809269_3210.html",
+          "source": "LeMonde",
+          "date": "2026-11-13T04:00:29.000Z",
+          "extrait": "Depuis plusieurs mois, l’Europe réclame une place à la table des négociations, mais Moscou n’a pas confirmé son accord. Jared Kushner et Steve Witkoff, les envoyés spéciaux du président américain, sont repartis de Moscou, jeudi, avec très peu d’éléments nouveaux sur les négociations entre la Russie et l’Ukraine."
+        },
+        "pairedItem": {
+          "item": 37
+        }
+      },
+      {
+        "json": {
+          "titre": "VIDEO - 13 novembre 2015 : le récit des attentats, minute par minute",
+          "url": "https://www.lemonde.fr/societe/video/2026/11/13/attentats-du-13-novembre-le-recit-en-video-minute-par-minute_6652780_3225.html",
+          "source": "LeMonde",
+          "date": "2026-11-13T08:36:01.000Z",
+          "extrait": "Grâce à des témoignages de premier plan, une reconstitution du Bataclan en 3D, et des documents rarement diffusés. « Le Monde » retrace cette soirée qui a changé la France."
+        },
+        "pairedItem": {
+          "item": 38
+        }
+      },
+      {
+        "json": {
+          "titre": "Nvidia : l’ancien PDG de Nvidia et le secrétaire au commerce invités à témoigner au Sénat américain",
+          "url": "https://www.lemonde.fr/international/article/2026/11/13/nvidia-l-ancien-pdg-de-nvidia-et-le-secretaire-au-commerce-invites-a-temoigner-au-senat-americain_6809295_3210.html",
+          "source": "LeMonde",
+          "date": "2026-11-13T08:49:28.000Z",
+          "extrait": "La démission de Jensen Huang, après des révélations sur sa liaison avec une femme d’affaires soupçonnée d’espionnage pour la Chine, place le contrôle des exportations de puces avancées au cœur des interrogations du Congrès."
+        },
+        "pairedItem": {
+          "item": 39
+        }
+      },
+      {
+        "json": {
+          "titre": "Attentat raciste de Trappes : le Rassemblement national annonce déposer une plainte en diffamation « très prochainement » contre Marine Tondelier",
+          "url": "https://www.lemonde.fr/politique/article/2026/11/13/attentat-raciste-de-trappes-le-rassemblement-national-annonce-deposer-une-plainte-en-diffamation-tres-prochainement-contre-marine-tondelier_6809304_823448.html",
+          "source": "LeMonde",
+          "date": "2026-11-13T09:44:33.000Z",
+          "extrait": "Après que les enquêteurs ont retrouvé des autocollants « Vive la France, RN, fier d’être français » chez Kevin Tessier, auteur de l’attentat, la patronne des Ecologistes avait déclaré : « Qu’est-ce qu’on fait de ce parti ? On considère qu’il est un parti comme les autres, alors que des gens tuent en son nom ? »"
+        },
+        "pairedItem": {
+          "item": 40
+        }
+      },
+      {
+        "json": {
+          "titre": "Présidentielle 2027 : Bruno Retailleau, en s’attaquant au droit du sol, durcit son programme sur l’immigration",
+          "url": "https://www.lemonde.fr/politique/article/2026/11/13/presidentielle-2027-bruno-retailleau-devoile-son-programme-toujours-plus-dur-pour-lutter-contre-l-immigration_6809292_823448.html",
+          "source": "LeMonde",
+          "date": "2026-11-13T07:20:16.000Z",
+          "extrait": "A la peine dans les sondages, le candidat Les Républicains a publié, jeudi, un livret programmatique pour « reprendre la main » et réduire au maximum l’arrivée d’étrangers en France."
+        },
+        "pairedItem": {
+          "item": 41
+        }
+      },
+      {
+        "json": {
+          "titre": "Procès des parents de la « petite inconnue de l’A10 » : « Je suis un vaurien. Je n’ai pas pu protéger mes enfants »",
+          "url": "https://www.lemonde.fr/societe/article/2026/11/13/proces-des-parents-de-l-inconnue-de-l-a10-je-suis-un-vaurien-je-n-ai-pas-pu-proteger-mes-enfants_6809259_3224.html",
+          "source": "LeMonde",
+          "date": "2026-11-13T01:53:28.000Z",
+          "extrait": "Accusé de complicité dans les actes de torture et de barbarie reprochés à Halima El Bakhti sur leur fille Inass, dont le corps a été retrouvé en bordure de l’A10 en 1987, Ahmed Touloub a expliqué son silence par la « peur » que lui inspirait son ex-épouse, depuis un mariage plus subi que choisi."
+        },
+        "pairedItem": {
+          "item": 42
+        }
+      },
+      {
+        "json": {
+          "titre": "Mobilisations sociales : « En jouant la montre, le pouvoir compte faire basculer la jeunesse et les personnels de l’éducation dans des divisions profondes »",
+          "url": "https://www.lemonde.fr/idees/article/2026/11/13/mobilisations-sociales-en-jouant-la-montre-le-pouvoir-compte-faire-basculer-la-jeunesse-et-les-personnels-de-l-education-dans-des-divisions-profondes_6809289_3232.html",
+          "source": "LeMonde",
+          "date": "2026-11-13T07:00:06.000Z",
+          "extrait": "Malgré la poursuite des manifestations des lycéens et des étudiants, le président de la République, Emmanuel Macron, ne se sent pas sommé de répondre aux revendications, analyse Isabelle Boucobza, professeure de droit public, dans une tribune au « Monde »."
+        },
+        "pairedItem": {
+          "item": 43
+        }
+      },
+      {
+        "json": {
+          "titre": "Gadi Eisenkot, possible futur premier ministre d’Israël et « fils d’immigrés » nés à Casablanca et Marrakech, suscite l’intérêt au Maroc",
+          "url": "https://www.lemonde.fr/afrique/article/2026/11/13/gadi-eisenkot-possible-futur-premier-ministre-d-israel-et-fils-d-immigres-nes-a-casablanca-et-marrakech-suscite-l-interet-au-maroc_6809296_3212.html",
+          "source": "LeMonde",
+          "date": "2026-11-13T09:00:06.000Z",
+          "extrait": "Mandaté pour former un nouvel exécutif, le principal opposant à Benyamin Nétanyahou pourrait devenir le premier chef de gouvernement israélien d’origine marocaine."
+        },
+        "pairedItem": {
+          "item": 44
+        }
+      },
+      {
+        "json": {
+          "titre": "En crise, le RC Lens évince Yannick Cahuzac, deux mois après avoir déjà changé d’entraîneur",
+          "url": "https://www.lemonde.fr/sport/article/2026/11/13/en-crise-le-rc-lens-evince-yannick-cahuzac-deux-mois-apres-avoir-deja-change-d-entraineur_6809299_3242.html",
+          "source": "LeMonde",
+          "date": "2026-11-13T09:07:15.000Z",
+          "extrait": "Le Racing Club de Lens a annoncé, jeudi, se séparer de son entraîneur, à la suite de deux mois de déboires sportifs et de son humiliation face à Côme (1-9) la semaine dernière. Le même jour, Crystal Palace s’est séparé de Pierre Sage."
+        },
+        "pairedItem": {
+          "item": 45
+        }
+      },
+      {
+        "json": {
+          "titre": "Italie-France : le premier échec de l’ère Zidane plonge les Bleus dans le doute",
+          "url": "https://www.lemonde.fr/sport/article/2026/11/13/italie-france-le-premier-echec-de-l-ere-zidane-plonge-les-bleus-dans-le-doute_6809260_3242.html",
+          "source": "LeMonde",
+          "date": "2026-11-13T02:17:40.000Z",
+          "extrait": "L’équipe de France de football a chuté face aux Transalpins (3-1), jeudi, à Milan, en Ligue des nations. Une contre-performance qui l’oblige à aller chercher sa qualification pour les quarts de finale, dimanche, face à la Turquie, à Bordeaux."
+        },
+        "pairedItem": {
+          "item": 46
+        }
+      },
+      {
+        "json": {
+          "titre": "La voix singulière de Jean-Paul Sartre se fait entendre entre les lignes du « Cours de philosophie de terminale » de 1942-1943",
+          "url": "https://www.lemonde.fr/livres/article/2026/11/13/la-voix-singuliere-de-jean-paul-sartre-se-fait-entendre-entre-les-lignes-du-cours-de-philosophie-de-terminale-de-1942-1943_6809286_3260.html",
+          "source": "LeMonde",
+          "date": "2026-11-13T06:00:07.000Z",
+          "extrait": "Ces cours inédits du professeur de philo au lycée Condorcet, à Paris, témoignent de l’enseignement de son époque comme de la singularité de la pensée de celui qui, dans le même temps, mettait la dernière main à « L’Etre et le Néant »."
+        },
+        "pairedItem": {
+          "item": 47
+        }
+      },
+      {
+        "json": {
+          "titre": "« L’IA fait peser un risque quasi existentiel sur le modèle économique d’une partie des écoles de management »",
+          "url": "https://www.lemonde.fr/campus/article/2026/11/13/l-ia-fait-peser-un-risque-quasi-existentiel-sur-le-modele-economique-d-une-partie-des-ecoles-de-management_6809275_4401467.html",
+          "source": "LeMonde",
+          "date": "2026-11-13T05:00:17.000Z",
+          "extrait": "Dans un entretien au « Monde », l’enseignant-chercheur à l’EM Lyon Guillaume Coqueret alerte sur l’automatisation des postes juniors par l’intelligence artificielle, qui remet en cause le retour sur investisssement des élèves des écoles de commerce."
+        },
+        "pairedItem": {
+          "item": 48
+        }
+      },
+      {
+        "json": {
+          "titre": "Technology: Making Life Easier or More Complicated?",
+          "url": "https://medium.com/@subhashkumarpal64/technology-making-life-easier-or-more-complicated-25ca42f9202c",
+          "source": "AskNews",
+          "date": "2026-11-12T16:24:45Z",
+          "extrait": "Published on November 12, 2026, on Medium.com, this article explores the dual nature of technology in daily life. The author argues that while technology offers significant benefits—such as rapid access to information for homework, maintaining long-distance relationships via video calls, and efficient navigation and payments—it also introduces complications like distraction, sleep disruption, and social isolation due to screen usage. The piece concludes that technology is neutral, comparing it to a car where the outcome depends on who is 'driving.' It suggests practical strategies for better control, including keeping phones away during meals and sleep, muting unnecessary notifications, and engaging in daily offline activities to prevent technology from becoming a source of stress rather than convenience."
+        },
+        "pairedItem": {
+          "item": 49
+        }
+      },
+      {
+        "json": {
+          "titre": "Glasses Are Quietly Becoming the Next Screen",
+          "url": "https://medium.com/@etsy3dperson/glasses-are-quietly-becoming-the-next-screen-5c43d6189047",
+          "source": "AskNews",
+          "date": "2026-11-13T03:51:18Z",
+          "extrait": "Sanem Avcil, founder of GamiBooks and Wellknown, argues that smart glasses are poised to become the next major computing interface, shifting the paradigm from handheld 'glowing rectangles' to wearable displays that integrate seamlessly into daily life. The article traces the evolution from early attempts like Google Glass in the early 2010s, which failed due to social awkwardness and privacy concerns, to modern devices that prioritize unobtrusive design. While Apple’s Vision Pro, launched in 2024, pursued full spatial computing with larger hardware, the prevailing trend is toward lightweight frames that resemble ordinary eyewear. Avcil posits that the true value of smart glasses lies in their integration with modern AI models, which can process visual and audio inputs to provide contextual assistance—such as translating signs, identifying people, or describing scenes—without requiring user interaction. This capability offers significant accessibility benefits for blind, low-vision, or hard-of-hearing users. However, the author highlights critical challenges, including privacy risks from facial cameras, engineering limitations regarding battery life and heat, and the potential for increased distraction. Success will depend on hardware becoming lighter and more normal-looking, developers creating practical everyday utilities, and the establishment of privacy norms before widespread adoption."
+        },
+        "pairedItem": {
+          "item": 50
+        }
+      },
+      {
+        "json": {
+          "titre": "A beginner's guide to understanding everyday tech jargon",
+          "url": "https://www.newsbytesapp.com/news/lifestyle/tech-jargon-made-simple-5-tips/story",
+          "source": "AskNews",
+          "date": "2026-11-13T04:42:49Z",
+          "extrait": "According to a guide published by NewsBytes, navigating technology can be challenging due to complex jargon. The article outlines five practical tips to make tech concepts more accessible: using analogies (such as comparing data storage to a 'digital filing cabinet'), breaking down terms into smaller components, avoiding unnecessary abbreviations, utilizing visual aids like diagrams and infographics, and encouraging questions to foster an open learning environment. The guide aims to help individuals of all backgrounds understand and communicate technical concepts more effectively."
+        },
+        "pairedItem": {
+          "item": 51
+        }
+      },
+      {
+        "json": {
+          "titre": "CamThink、モースマイクロのWi-Fi HaLow技術を採用し、NeoEyesコンパクトカメラ製品群を拡充",
+          "url": "https://prtimes.jp/main/html/rd/p/000000053.000096406.html",
+          "source": "AskNews",
+          "date": "2026-11-13T01:45:55Z",
+          "extrait": "Morse Micro PTY. LTD., a global technology leader in Wi-Fi HaLow headquartered in New South Wales, Australia, announced a partnership with CamThink on November 13, 2026. The collaboration integrates long-range, low-power Wi-Fi HaLow technology into CamThink's NeoEyes compact camera product line, specifically the NE101, NE301, and NE302 models. This integration enables developers to deploy edge AI hardware in remote locations where traditional Wi-Fi lacks sufficient range or power efficiency. Michael De Nil, Co-founder and CEO of Morse Micro, stated that edge AI is a 'most compelling use case' for Wi-Fi HaLow. Ming Shen, Co-founder of CamThink, noted that the partnership allows developers and OEM teams to more flexibly provide visual intelligence to remote monitoring systems. Morse Micro claims its Wi-Fi HaLow technology offers 10x the communication distance and 100x the coverage area of traditional Wi-Fi, while providing 1,000x the data speed of conventional LPWAN technologies. The Wi-Fi HaLow-enabled models are currently available for purchase at camthink.ai/store."
+        },
+        "pairedItem": {
+          "item": 52
+        }
+      },
+      {
+        "json": {
+          "titre": "تطوير نظام ذكاء اصطناعي \"خصوصي\"... محادثاتك لا تغادر جهازك",
+          "url": "https://aawsat.com/node/5340441",
+          "source": "AskNews",
+          "date": "2026-11-12T11:21:27Z",
+          "extrait": "As AI systems become integrated into daily life, concerns regarding data privacy and security have intensified. According to an article by James Roberts, the U.S. Federal Trade Commission (FTC) launched an investigation in 2025 into consumer-facing AI chatbots to determine how companies process, use, and share user data. Public sentiment reflects deep skepticism; a 2026 Pew Research Center survey found that 71% of U.S. adults believe AI expansion will make their personal information less secure, while only 3% believe it will improve security. Additionally, 67% of Americans reported little to no trust in the federal government's ability to effectively regulate AI. \n\nIn response to these concerns, Michael Folk, founder of FolkTech AI, developed 'Serena,' a 'local-first agentic AI' system designed to operate entirely on the user's personal device. Folk, a former paramedic, stated that his experience with technology failures during critical medical emergencies drove him to build a system that does not require a permanent connection to external cloud servers. By processing data locally, 'Serena' ensures that user conversations do not leave the device, and the system does not require user account creation. \n\nThe company also offers 'Serena Business,' which operates on devices controlled by the enterprise, functioning as a 'digital mind' that builds knowledge from internal documents. The system is designed to maintain context over time and proactively follow up on previous discussions. Folk emphasized that privacy must be embedded in the technical architecture, stating, 'Once information leaves the device, a new place appears where trust must be built.' \n\nFolkTech AI has pledged to donate the consumer version of 'Serena,' along with advanced educational content, to communities with unreliable internet access for every 'Serena Business' product sold. The company remains self-funded and open to strategic partnerships, aiming to build technology that serves users without requiring them to relinquish control over their data."
+        },
+        "pairedItem": {
+          "item": 53
+        }
+      },
+      {
+        "json": {
+          "titre": "How Mobile Phones Have Evolved: A Technological Journey",
+          "url": "https://medium.com/@nextelle14/how-mobile-phones-have-evolved-a-technological-journey-f16ed953279e",
+          "source": "AskNews",
+          "date": "2026-11-12T20:11:22Z",
+          "extrait": "An article published on Medium.com on November 12, 2026, outlines the technological evolution of mobile phones from basic communication devices to advanced smartphones. The text notes that the first mobile phones were heavy and limited to voice calls, while the 1980s saw the introduction of smaller, though still bulky, models. The 1990s marked a shift toward text messaging and compact designs, with Nokia dominating the market through durable models like the Nokia 3310. The emergence of smartphones began with Research in Motion (now BlackBerry) introducing mobile email and Nokia’s Symbian OS, but the article identifies Apple’s 2007 iPhone launch as the key moment that mainstreamed touchscreen interfaces and app ecosystems. Modern smartphones are described as featuring high-resolution displays, multi-core processors, advanced cameras, AI capabilities, biometric authentication, and mobile payments. The article projects that 5G technology, foldable screens, and the Internet of Things (IoT) will further revolutionize connectivity and device design in the future."
+        },
+        "pairedItem": {
+          "item": 54
+        }
+      },
+      {
+        "json": {
+          "titre": "Episode of November 12, 2026",
+          "url": "https://moncarnet.com/wp-content/uploads/120secondes-feeds/media/audio/2026-11-12_en_us.mp3",
+          "source": "AskNews",
+          "date": "2026-11-11T22:19:11Z",
+          "extrait": "In the November 12, 2026, edition of '120 Seconds of Tech,' host Bruno Guglielminetti reports on several major technology industry developments. The episode highlights allegations that Nvidia’s CEO facilitated the shipment of 240,000 chips worth at least $7.5 billion USD to Chinese companies through a suspected spy, leading to an FBI investigation, a class action lawsuit, and a reported $430 billion loss in market value. Additionally, Anthropic is expanding its Claude AI platform with collaborative office tools, including video conference participation and smart spreadsheets, to compete with Microsoft and Google. Google is launching its 'PixelTag' tracking device in only eight markets, notably excluding European Union countries like France and Belgium. Apple announced the permanent closure of its online support community, which has been active since 1998, with the shutdown taking effect on November 20th. Finally, Samsung and Google are entering the smart-glasses market with pre-orders for their first Android XR glasses opening on November 12th to challenge Meta’s Ray-Ban smart glasses."
+        },
+        "pairedItem": {
+          "item": 55
+        }
+      },
+      {
+        "json": {
+          "titre": "How AI Companions Connect Conversation With Physical Devices",
+          "url": "https://techbullion.com/how-ai-companions-connect-conversation-with-physical-devices/",
+          "source": "AskNews",
+          "date": "2026-11-12T11:25:31Z",
+          "extrait": "According to TechBullion, the integration of AI companions with physical devices involves distinct technical layers: input reception, response generation, instruction communication, and physical execution. The article argues that evaluating these products requires looking beyond the conversational interface to assess connection reliability and control mechanisms. Using the adult wellness brand SensOn and its S1 device as a concrete example, the text explains that a device response does not necessarily indicate that an AI has inferred emotion, but rather that an input was processed through supported rules. The article emphasizes that users should distinguish between conversation quality and hardware control, noting that 'personalized' features require specific explanations regarding data retention and user preference management. Additionally, the text advises consumers to evaluate privacy across multiple touchpoints, including account details and app permissions, and to treat software-dependent hardware as an ongoing service relationship that requires checking supported operating systems and subscription terms. The author concludes that reliable connections and accessible controls are more critical to usability than the length of a product's capability menu."
+        },
+        "pairedItem": {
+          "item": 56
+        }
+      },
+      {
+        "json": {
+          "titre": "Resilience Against Cyberattacks: How to Keep an Audiovisual Company Running 24/7",
+          "url": "https://www.telefonica.com/en/communication-room/blog/resilience-cyberattacks-audiovisual-business-continuity/",
+          "source": "AskNews",
+          "date": "2026-11-12T08:30:00Z",
+          "extrait": "Telefónica, a telecommunications company, published an article on November 12, 2026, defining 'cyber resilience' as an organization's capacity to maintain critical processes and gradually restore systems when protective measures fail. The article utilizes a narrative scenario of a television newsroom that, after a cyberattack forced the shutdown of all digital tools, continued broadcasting using manual methods such as whiteboards and paper scripts. Telefónica argues that while digitization increases operational speed and flexibility, it also creates complex dependencies across networks, servers, and third-party services that can jeopardize business continuity. The company emphasizes that cybersecurity must evolve from merely protecting computers to protecting an organization's ability to operate. Key strategies outlined include conducting authorized penetration tests (pentests) to identify vulnerabilities in a controlled manner, securing backups, and defining 'minimum viable levels of operation.' The text concludes that redundancy does not automatically equal resilience if systems share common dependencies, and that organizations must be prepared to function even when advanced digital technologies are unavailable."
+        },
+        "pairedItem": {
+          "item": 57
+        }
+      },
+      {
+        "json": {
+          "titre": "ساعتك الذكية قد تتمكن من تتبع حركة جسمك بالكامل دون كاميرا أو مستشعرات إضافية",
+          "url": "https://www.alarabiya.net/technology/smart-phones/2026/11/12/%D8%B3%D8%A7%D8%B9%D8%AA%D9%83-%D8%A7%D9%84%D8%B0%D9%83%D9%8A%D8%A9-%D9%82%D8%AF-%D8%AA%D8%AA%D9%85%D9%83%D9%86-%D9%85%D9%86-%D8%AA%D8%AA%D8%A8%D8%B9-%D8%AD%D8%B1%D9%83%D8%A9-%D8%AC%D8%B3%D9%85%D9%83-%D8%A8%D8%A7%D9%84%D9%83%D8%A7%D9%85%D9%84-%D8%AF%D9%88%D9%86-%D9%83%D8%A7%D9%85%D9%8A%D8%B1%D8%A7-%D8%A7%D9%88-%D9%85%D8%B3%D8%AA%D8%B4%D8%B9%D8%B1%D8%A7%D8%AA-%D8%A7%D8%B6%D8%A7%D9%81%D9%8A%D8%A9",
+          "source": "AskNews",
+          "date": "2026-11-12T00:00:00Z",
+          "extrait": "Researchers at Cornell University have developed a technology called EchoMotion, which enables smartwatches to track full-body movements without the need for additional cameras or sensors. Developed by the SciFi Lab at Cornell, EchoMotion utilizes the built-in speaker and microphone in commercial smartwatches to emit ultrasonic waves and analyze their reflections to reconstruct body posture and joint movements. According to a report by 'digitaltrends' reviewed by 'العربية Business', the system relies entirely on software and requires no hardware modifications, with the AI model totaling less than 30 megabytes in size. \n\nIn initial trials, 10 participants performed 18 types of physical movements, allowing the AI to predict the positions of 12 major joints. When tested on a commercial Samsung Galaxy Watch 6, the system achieved an average error of less than 4 inches (approximately 10 centimeters) without calibration. After 12 minutes of calibration data collection, the error margin decreased to approximately 2.4 inches (6 centimeters). The technology was successfully transferred to Samsung Galaxy Watch 7 and Google Pixel Watch 3 devices without retraining. \n\nWhile the system's accuracy is affected by other moving people in the vicinity, it remains robust against background noise, such as gym music at 76 decibels. The technology consumes minimal power, using only 5-6% of a Galaxy Watch 6's battery during a 30-minute session. In a prototype application, the system identified 20 different gym exercises with 95.4% accuracy. Lead researcher Saif Mahmoud, a doctoral student at Cornell, noted that the technology represents a significant step toward full-body tracking on existing commercial hardware, with potential applications in medical rehabilitation and smart glasses for extended reality (XR)."
+        },
+        "pairedItem": {
+          "item": 58
+        }
+      }
+    ]
+  },
   "connections": {
     "When clicking ‘Execute workflow’": {
       "main": [
@@ -406,7 +1152,7 @@
       "main": [
         [
           {
-            "node": "Filter",
+            "node": "Filter_24h",
             "type": "main",
             "index": 0
           }
@@ -466,6 +1212,28 @@
           }
         ]
       ]
+    },
+    "Filter_24h": {
+      "main": [
+        [
+          {
+            "node": "Filter_mp3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter_mp3": {
+      "main": [
+        [
+          {
+            "node": "Edit_extrait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -473,11 +1241,11 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "e2f21928-1ed2-4317-86e9-07b378cb7844",
+  "versionId": "f1fafe28-4ac7-41fc-811f-04e18c23e46f",
   "meta": {
     "instanceId": "f759c8d61638adda5da2caf28408f3598cbfe088241fbb352d7ef3d026f764be"
   },
   "nodeGroups": [],
-  "id": "1d1r3NH7op0wo3sP",
+  "id": "qZTxJsabVA73WtUH",
   "tags": []
 }
