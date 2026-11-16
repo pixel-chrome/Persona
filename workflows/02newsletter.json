@@ -205,6 +205,30 @@
     },
     {
       "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO sent_log  (user_id, story_urls) VALUES ($1, $2::JSONB);",
+        "options": {
+          "queryReplacement": "={{ [ $('Construire_email').item.json.user_id, JSON.stringify($('Construire_email').item.json.story_urls) ] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.8,
+      "position": [
+        1808,
+        240
+      ],
+      "id": "0b82f27c-8f5a-4566-bca0-69f8de7cb2a4",
+      "name": "Envoie_log",
+      "credentials": {
+        "postgres": {
+          "id": "UWUrIoj44BXGU0Ah",
+          "name": "POSTGRES_PERSONA"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
         "fromEmail": "newsletter@n8n.com",
         "toEmail": "={{ $json.email }}",
         "subject": "={{ $json.subject }}",
@@ -220,36 +244,12 @@
         64
       ],
       "id": "5d196806-9e1e-4423-897f-abb7732b280a",
-      "name": "Send an Email",
+      "name": "envoie_mail",
       "webhookId": "b9fe61e0-1211-4ffb-b4d5-e4e1bfa991af",
       "credentials": {
         "smtp": {
           "id": "RyP46iovj49AwyqJ",
           "name": "SMTP_PERSONA"
-        }
-      },
-      "onError": "continueErrorOutput"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "INSERT INTO sent_log  (user_id, story_urls) VALUES ($1, $2::JSONB);",
-        "options": {
-          "queryReplacement": "={{ [ $('Construire_email').item.json.user_id, JSON.stringify($('Construire_email').item.json.story_urls) ] }}"
-        }
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.8,
-      "position": [
-        1808,
-        240
-      ],
-      "id": "0b82f27c-8f5a-4566-bca0-69f8de7cb2a4",
-      "name": "Execute a SQL query",
-      "credentials": {
-        "postgres": {
-          "id": "UWUrIoj44BXGU0Ah",
-          "name": "POSTGRES_PERSONA"
         }
       },
       "onError": "continueErrorOutput"
@@ -360,25 +360,25 @@
       "main": [
         [
           {
-            "node": "Send an Email",
+            "node": "envoie_mail",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Execute a SQL query",
+            "node": "Envoie_log",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Send an Email": {
+    "envoie_mail": {
       "main": [
         [
           {
-            "node": "Execute a SQL query",
+            "node": "Envoie_log",
             "type": "main",
             "index": 0
           }
@@ -391,7 +391,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "c6fdf68e-c658-411d-a0d7-1a7ea2672459",
+  "versionId": "1fbdd00b-b0ac-476f-86e8-2d9eb97924cc",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "f759c8d61638adda5da2caf28408f3598cbfe088241fbb352d7ef3d026f764be"
