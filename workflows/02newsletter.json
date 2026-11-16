@@ -6,7 +6,8 @@
         "rule": {
           "interval": [
             {
-              "field": "minutes"
+              "field": "minutes",
+              "minutesInterval": 1
             }
           ]
         }
@@ -390,7 +391,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "5f94aedf-3cd7-4cc2-a861-5b3d25684a06",
+  "versionId": "c6fdf68e-c658-411d-a0d7-1a7ea2672459",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "f759c8d61638adda5da2caf28408f3598cbfe088241fbb352d7ef3d026f764be"
