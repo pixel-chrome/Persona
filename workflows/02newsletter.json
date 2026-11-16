@@ -35,7 +35,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT u.id, u.email, p.topics, p.language, p.custom_prompt, p.timezone\nFROM users u\nJOIN preferences p ON p.user_id = u.id\nWHERE u.unsubscribed = false\n  AND u.consent_at IS NOT NULL\n  AND p.send_time IS NOT NULL\n  AND (now() AT TIME ZONE p.timezone)::time >= p.send_time\n  AND (now() AT TIME ZONE p.timezone)::time <  p.send_time + interval '5 minutes'\n  AND NOT EXISTS (\n    SELECT 1 FROM sent_log s\n    WHERE s.user_id = u.id\n      AND (s.sent_at AT TIME ZONE p.timezone)::date = (now() AT TIME ZONE p.timezone)::date\n  );",
+        "query": "SELECT u.id, u.email, p.topics, p.language, p.custom_prompt, p.timezone,\n  (SELECT COALESCE(jsonb_agg(url), '[]'::jsonb)\n   FROM sent_log s2, jsonb_array_elements_text(s2.story_urls) AS url\n   WHERE s2.user_id = u.id AND s2.sent_at > now() - interval '2 days') AS deja_envoyees\nFROM users u\nJOIN preferences p ON p.user_id = u.id\nWHERE u.unsubscribed = false\n  AND u.consent_at IS NOT NULL\n  AND p.send_time IS NOT NULL\n  AND (now() AT TIME ZONE p.timezone)::time >= p.send_time\n  AND (now() AT TIME ZONE p.timezone)::time <  p.send_time + interval '5 minutes'\n  AND NOT EXISTS (\n    SELECT 1 FROM sent_log s\n    WHERE s.user_id = u.id\n      AND (s.sent_at AT TIME ZONE p.timezone)::date = (now() AT TIME ZONE p.timezone)::date\n  );",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -391,7 +391,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "1fbdd00b-b0ac-476f-86e8-2d9eb97924cc",
+  "versionId": "593b7e2f-a255-4906-8704-85a3702fbf30",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "f759c8d61638adda5da2caf28408f3598cbfe088241fbb352d7ef3d026f764be"
