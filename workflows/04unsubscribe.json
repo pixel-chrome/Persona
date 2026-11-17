@@ -1,0 +1,107 @@
+{
+  "name": "04unsubscribe",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "unsubscribe",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "aa803225-489a-4298-8919-4ef6463c24b6",
+      "name": "Webhook",
+      "webhookId": "684754da-9c64-41dd-8643-c3d696bdb94a"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE users SET unsubscribed = true WHERE unsub_token = $1 RETURNING id;",
+        "options": {
+          "queryReplacement": "={{ $json.query.token }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.8,
+      "position": [
+        224,
+        0
+      ],
+      "id": "fac4a60e-ea1f-4a38-9707-63a8cf60fd67",
+      "name": "Desinscrire",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "UWUrIoj44BXGU0Ah",
+          "name": "POSTGRES_PERSONA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "Vous vous êtes bien désinscrit de la newsletter",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/plain; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "19dd5057-7b48-46c0-a1e7-fc5d8e11ba5a",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Desinscrire",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Desinscrire": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "91a2aa0f-5d11-4953-8616-76e12147baca",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f759c8d61638adda5da2caf28408f3598cbfe088241fbb352d7ef3d026f764be"
+  },
+  "nodeGroups": [],
+  "id": "jb8jfm1981uWXZVH",
+  "tags": []
+}

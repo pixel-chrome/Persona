@@ -12,10 +12,12 @@ CREATE TABLE users (
     role           TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
     consent_at     TIMESTAMPTZ,                    -- RGPD : NULL tant que l'user n'a pas tapé /accepte
     unsubscribed   BOOLEAN NOT NULL DEFAULT FALSE, -- RGPD : plus d'envoi
+    unsub_token    TEXT NOT NULL DEFAULT encode(gen_random_bytes(24), 'hex'), -- lien de désinscription dans la newsletter (aléatoire, non devinable)
     created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 -- Unicité insensible à la casse : "Paul@x.fr" et "paul@x.fr" = même compte
 CREATE UNIQUE INDEX users_email_uq    ON users (lower(email));
+CREATE UNIQUE INDEX users_unsub_token_uq ON users (unsub_token);
 
 -- Codes de connexion à usage unique envoyés par email (un seul code actif par adresse).
 CREATE TABLE login_codes (
@@ -60,12 +62,3 @@ CREATE TABLE audit_log (
     action   TEXT NOT NULL,                                   -- ex: 'login_ok', 'login_fail', 'delete_account'
     at       TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
--- ⚠ FAUX UTILISATEUR DE TEST — il n'existe pas : adresse fictive (example.com, domaine réservé
--- aux exemples), aucune donnée personnelle. Sert uniquement à tester 02newsletter.
--- À SUPPRIMER avant le rendu final (ou à déplacer dans un fichier de test séparé).
-INSERT INTO users (email, consent_at) VALUES ('factice@example.com', now());
-
-INSERT INTO preferences (user_id, topics, send_time, timezone, language)
-SELECT id, jsonb_build_array('technology', 'ia'), '08:00', 'Europe/Paris', 'fr'
-FROM users WHERE email = 'factice@example.com';
