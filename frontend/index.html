@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Persona</title>
+<style>
+  :root {
+    --bg: #f5f6fb;
+    --card: #ffffff;
+    --text: #1c1e2b;
+    --muted: #6b7084;
+    --border: #e5e7f0;
+    --accent: #6366f1;
+    --accent-2: #8b5cf6;
+    --bot: #eef0fa;
+    --shadow: 0 20px 50px -20px rgba(40, 40, 90, .25);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1117;
+      --card: #171a23;
+      --text: #e8eaf3;
+      --muted: #8d92a8;
+      --border: #272b38;
+      --bot: #222636;
+      --shadow: 0 20px 50px -20px rgba(0, 0, 0, .7);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+  }
+  .chat {
+    width: 100%; max-width: 640px; height: min(780px, 100%);
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; box-shadow: var(--shadow);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    width: 40px; height: 40px; border-radius: 12px; flex: none;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 18px;
+  }
+  header h1 { font-size: 16px; margin: 0; }
+  header p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); }
+  .reset {
+    margin-left: auto; background: none; border: 1px solid var(--border);
+    color: var(--muted); border-radius: 10px; padding: 6px 10px; font-size: 12px; cursor: pointer;
+  }
+  .reset:hover { color: var(--text); }
+  #log {
+    flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px;
+    scroll-behavior: smooth;
+  }
+  .msg {
+    max-width: 82%; padding: 10px 14px; border-radius: 16px; line-height: 1.5;
+    font-size: 14.5px; white-space: pre-wrap; word-wrap: break-word;
+    animation: pop .18s ease-out;
+  }
+  .msg.bot { background: var(--bot); border-bottom-left-radius: 4px; align-self: flex-start; }
+  .msg.user {
+    color: #fff; align-self: flex-end; border-bottom-right-radius: 4px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  }
+  .msg.err { background: #fee2e2; color: #991b1b; align-self: flex-start; }
+  .msg a { color: inherit; text-decoration: underline; }
+  .msg code { background: rgba(120, 120, 150, .2); padding: 1px 5px; border-radius: 5px; font-size: 13px; }
+  .typing { display: inline-flex; gap: 4px; padding: 14px; }
+  .typing i {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--muted);
+    animation: blink 1.2s infinite ease-in-out;
+  }
+  .typing i:nth-child(2) { animation-delay: .15s; }
+  .typing i:nth-child(3) { animation-delay: .3s; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 20px 10px; }
+  .chip {
+    border: 1px solid var(--border); background: none; color: var(--muted);
+    border-radius: 999px; padding: 5px 11px; font-size: 12.5px; cursor: pointer;
+  }
+  .chip:hover { color: var(--accent); border-color: var(--accent); }
+  form { display: flex; gap: 10px; padding: 14px 20px 18px; border-top: 1px solid var(--border); }
+  input {
+    flex: 1; border: 1px solid var(--border); background: var(--bg); color: var(--text);
+    border-radius: 12px; padding: 12px 14px; font-size: 14.5px; outline: none;
+  }
+  input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99, 102, 241, .18); }
+  button.send {
+    border: 0; border-radius: 12px; padding: 0 18px; color: #fff; font-weight: 600; cursor: pointer;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  }
+  button.send:disabled { opacity: .5; cursor: default; }
+  @keyframes pop { from { opacity: 0; transform: translateY(6px); } }
+  @keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+  @media (max-width: 520px) { body { padding: 0; } .chat { border-radius: 0; height: 100%; border: 0; } }
+</style>
+</head>
+<body>
+<main class="chat">
+  <header>
+    <div class="logo">P</div>
+    <div>
+      <h1>Persona</h1>
+      <p>Ta newsletter, selon tes sujets</p>
+    </div>
+    <button class="reset" id="reset" type="button" title="Nouvelle conversation">Nouvelle session</button>
+  </header>
+
+  <div id="log" aria-live="polite"></div>
+
+  <div class="chips" id="chips"></div>
+  <form id="form" autocomplete="off">
+    <input id="input" placeholder="Écris un message ou une commande…" maxlength="500" autofocus>
+    <button class="send" id="send" type="submit">Envoyer</button>
+  </form>
+</main>
+
+<script>
+// URL du Chat Trigger de 01chat (workflow publié + « Make Chat Publicly Available » activé).
+const WEBHOOK_URL = 'http://localhost:5678/webhook/7c1f0a52-3b8e-4d1a-9f55-2a6d4e8b1c02/chat';
+
+const log = document.getElementById('log');
+const form = document.getElementById('form');
+const input = document.getElementById('input');
+const send = document.getElementById('send');
+
+// Une session = un identifiant aléatoire gardé dans le navigateur (le workflow s'en sert pour le login).
+function newSessionId() { return crypto.randomUUID().replace(/-/g, ''); }
+let sessionId;
+try { sessionId = localStorage.getItem('persona_session'); } catch (e) {}
+if (!sessionId) {
+  sessionId = newSessionId();
+  try { localStorage.setItem('persona_session', sessionId); } catch (e) {}
+}
+
+// Texte -> HTML sûr : on échappe tout d'abord, puis on ajoute gras, code et liens http(s).
+function render(text) {
+  const esc = String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return esc
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+    .replace(/(^|[\s(])(https?:\/\/[^\s<)]+)/g, '$1<a href="$2" target="_blank" rel="noopener noreferrer">$2</a>');
+}
+
+function add(role, text) {
+  const el = document.createElement('div');
+  el.className = 'msg ' + role;
+  el.innerHTML = render(text);
+  log.appendChild(el);
+  log.scrollTop = log.scrollHeight;
+  return el;
+}
+
+function typing() {
+  const el = document.createElement('div');
+  el.className = 'msg bot typing';
+  el.innerHTML = '<i></i><i></i><i></i>';
+  log.appendChild(el);
+  log.scrollTop = log.scrollHeight;
+  return el;
+}
+
+async function ask(text) {
+  add('user', text);
+  input.value = '';
+  send.disabled = true;
+  const t = typing();
+  try {
+    const res = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'sendMessage', sessionId, chatInput: text }),
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const raw = await res.text();
+    let out = raw;
+    try { const j = JSON.parse(raw); out = j.output ?? j.text ?? raw; } catch (e) {}
+    t.remove();
+    add('bot', out || '(réponse vide)');
+  } catch (e) {
+    t.remove();
+    add('err', "Impossible de joindre Persona. Le workflow 01chat est-il publié et le chat public ? (" + e.message + ")");
+  } finally {
+    send.disabled = false;
+    input.focus();
+  }
+}
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const text = input.value.trim();
+  if (text) ask(text);
+});
+
+// Raccourcis : les commandes sans argument partent tout de suite, les autres pré-remplissent le champ.
+const chips = [
+  { label: '/connexion', fill: '/connexion ' },
+  { label: '/accepte', send: '/accepte' },
+  { label: '/mesdonnees', send: '/mesdonnees' },
+  { label: '/stop', send: '/stop' },
+  { label: '/reprendre', send: '/reprendre' },
+  { label: '/logout', send: '/logout' },
+];
+const chipBox = document.getElementById('chips');
+chips.forEach((c) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'chip'; b.textContent = c.label;
+  b.onclick = () => { if (c.send) ask(c.send); else { input.value = c.fill; input.focus(); } };
+  chipBox.appendChild(b);
+});
+
+document.getElementById('reset').onclick = () => {
+  sessionId = newSessionId();
+  try { localStorage.setItem('persona_session', sessionId); } catch (e) {}
+  log.innerHTML = '';
+  add('bot', 'Bienvenue sur Persona 👋\nPour commencer : **/connexion ton@email.com**, puis **/code 123456** avec le code reçu par mail.');
+};
+
+add('bot', 'Bienvenue sur Persona 👋\nPour commencer : **/connexion ton@email.com**, puis **/code 123456** avec le code reçu par mail.');
+</script>
+</body>
+</html>
