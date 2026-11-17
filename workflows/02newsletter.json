@@ -10,7 +10,8 @@
               "minutesInterval": 4
             }
           ]
-        }
+        },
+        "misfirePolicy": "coalesce"
       },
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.4,
@@ -35,7 +36,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT u.id, u.email, p.topics, p.language, p.custom_prompt, p.timezone,\n  (SELECT COALESCE(jsonb_agg(url), '[]'::jsonb)\n   FROM sent_log s2, jsonb_array_elements_text(s2.story_urls) AS url\n   WHERE s2.user_id = u.id AND s2.sent_at > now() - interval '2 days') AS deja_envoyees\nFROM users u\nJOIN preferences p ON p.user_id = u.id\nWHERE u.unsubscribed = false\n  AND u.consent_at IS NOT NULL\n  AND p.send_time IS NOT NULL\n  AND (now() AT TIME ZONE p.timezone)::time >= p.send_time\n  AND (now() AT TIME ZONE p.timezone)::time <  p.send_time + interval '5 minutes'\n  AND NOT EXISTS (\n    SELECT 1 FROM sent_log s\n    WHERE s.user_id = u.id\n      AND (s.sent_at AT TIME ZONE p.timezone)::date = (now() AT TIME ZONE p.timezone)::date\n  );",
+        "query": "SELECT u.id, u.email, u.unsub_token, p.topics, p.language, p.custom_prompt, p.timezone,\n  (SELECT COALESCE(jsonb_agg(url), '[]'::jsonb)\n   FROM sent_log s2, jsonb_array_elements_text(s2.story_urls) AS url\n   WHERE s2.user_id = u.id AND s2.sent_at > now() - interval '2 days') AS deja_envoyees\nFROM users u\nJOIN preferences p ON p.user_id = u.id\nWHERE u.unsubscribed = false\n  AND u.consent_at IS NOT NULL\n  AND p.send_time IS NOT NULL\n  AND (now() AT TIME ZONE p.timezone)::time >= p.send_time\n  AND (now() AT TIME ZONE p.timezone)::time <  p.send_time + interval '5 minutes'\n  AND NOT EXISTS (\n    SELECT 1 FROM sent_log s\n    WHERE s.user_id = u.id\n      AND (s.sent_at AT TIME ZONE p.timezone)::date = (now() AT TIME ZONE p.timezone)::date\n  );",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -126,9 +127,9 @@
       "parameters": {
         "modelId": {
           "__rl": true,
-          "value": "models/gemini-3.5-flash",
+          "value": "models/gemini-3.5-flash-lite",
           "mode": "list",
-          "cachedResultName": "Gemini 3.5 Flash"
+          "cachedResultName": "Gemini 3.5 Flash Lite"
         },
         "messages": {
           "values": [
@@ -155,17 +156,18 @@
           "id": "F24f5TYZcYLYlJMC",
           "name": "LLM_PERSONA"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
-        "jsCode": "const user = $('Perparer_par_user').item.json;\n\n// 1) Lire la réponse du LLM (texte contenant du JSON)\nconst raw = $json.content?.parts?.[0]?.text ?? '';\nlet selection = [];\ntry {\n  const clean = raw.replace(/```json|```/g, '').trim();\n  selection = JSON.parse(clean).selection || [];\n} catch (e) {\n  selection = [];\n}\n\n// 2) Retrouver les articles par leur numéro, avec les URLs de NOS données\nconst vus = new Set();\nconst choisis = [];\nfor (const s of selection) {\n  const a = user.articles[Number(s.id)];\n  if (!a || !/^https?:\\/\\//.test(a.url) || vus.has(a.url)) continue;\n  vus.add(a.url);\n  choisis.push({ titre: a.titre, url: a.url, source: a.source, resume: String(s.resume ?? '') });\n}\nconst top = choisis.slice(0, 6);\n\n// 3) Construire l'email (texte échappé pour le HTML)\nconst esc = (s) => String(s ?? '')\n  .replace(/&/g, '&amp;').replace(/</g, '&lt;')\n  .replace(/>/g, '&gt;').replace(/\"/g, '&quot;');\n\nconst date = new Date().toLocaleDateString('fr-FR', {\n  timeZone: user.timezone, weekday: 'long', day: 'numeric', month: 'long',\n});\nconst subject = `Votre newsletter Persona du ${date}`;\n\nconst blocs = top.map((a) =>\n  `<h3 style=\"margin:16px 0 4px\"><a href=\"${esc(a.url)}\">${esc(a.titre)}</a></h3>` +\n  `<p style=\"margin:0 0 4px\">${esc(a.resume)}</p>` +\n  `<p style=\"margin:0;color:#777;font-size:12px\">${esc(a.source)}</p>`\n).join('');\n\nconst html =\n  `<div style=\"font-family:Arial,sans-serif;max-width:600px\">` +\n  `<h2>Votre newsletter du ${esc(date)}</h2>${blocs}` +\n  `<hr><p style=\"font-size:12px;color:#777\">Pour te désinscrire, tape /stop dans le chat.</p></div>`;\n\nconst text =\n  `Votre newsletter du ${date}\\n\\n` +\n  top.map((a) => `${a.titre}\\n${a.resume}\\n${a.url} (${a.source})`).join('\\n\\n') +\n  `\\n\\nPour te désinscrire, tape /stop dans le chat.`;\n\nreturn { json: {\n  user_id: user.id,\n  email: user.email,\n  nb: top.length,\n  subject, html, text,\n  story_urls: top.map((a) => a.url),\n} };"
+        "jsCode": "const user = $('Perparer_par_user').item.json;\n\n// 1) Lire la réponse du LLM (texte contenant du JSON)\nconst raw = ($json.content?.parts ?? []).filter(p => !p.thought).map(p => p.text ?? '').join('');\nlet selection = [];\ntry {\n  const clean = raw.replace(/```json|```/g, '').trim();\n  selection = JSON.parse(clean).selection || [];\n} catch (e) {\n  selection = [];\n}\n\n// 2) Retrouver les articles par leur numéro, avec les URLs de NOS données\nconst vus = new Set();\nconst choisis = [];\nfor (const s of selection) {\n  const a = user.articles[Number(s.id)];\n  if (!a || !/^https?:\\/\\//.test(a.url) || vus.has(a.url)) continue;\n  vus.add(a.url);\n  choisis.push({ titre: a.titre, url: a.url, source: a.source, resume: String(s.resume ?? '') });\n}\nconst top = choisis.slice(0, 6);\n\n// 3) Construire l'email (texte échappé pour le HTML)\nconst esc = (s) => String(s ?? '')\n  .replace(/&/g, '&amp;').replace(/</g, '&lt;')\n  .replace(/>/g, '&gt;').replace(/\"/g, '&quot;');\n\nconst date = new Date().toLocaleDateString('fr-FR', {\n  timeZone: user.timezone, weekday: 'long', day: 'numeric', month: 'long',\n});\nconst subject = `Votre newsletter Persona du ${date}`;\n//lien pour se desinscrire\nconst lien = `http://localhost:5678/webhook/unsubscribe?token=${encodeURIComponent(user.unsub_token)}`;\nconst blocs = top.length === 0\n  ? `<p>Désolé, aujourd'hui nous n'avons aucun nouvel article à vous proposer sur vos sujets. À demain !</p>`\n  : top.map((a) =>\n      `<h3 style=\"margin:16px 0 4px\"><a href=\"${esc(a.url)}\">${esc(a.titre)}</a></h3>` +\n      `<p style=\"margin:0 0 4px\">${esc(a.resume)}</p>` +\n      `<p style=\"margin:0;color:#777;font-size:12px\">${esc(a.source)}</p>`\n    ).join('');\n\nconst html =\n  `<div style=\"font-family:Arial,sans-serif;max-width:600px\">` +\n  `<h2>Votre newsletter du ${esc(date)}</h2>${blocs}` +\n  `<hr><p style=\"font-size:12px;color:#777\">Pour te désinscrire, tape /stop dans le chat. Ou <a href=\"${lien}\">clique ici</a>.</p></div>`;\n\nconst text =\n  `Votre newsletter du ${date}\\n\\n` +\n  (top.length === 0\n  ? \"Désolé, aujourd'hui nous n'avons aucun nouvel article à vous proposer sur vos sujets. À demain !\"\n  : top.map((a) => `${a.titre}\\n${a.resume}\\n${a.url} (${a.source})`).join('\\n\\n')) +\n  `\\n\\nPour te désinscrire, tape /stop dans le chat. Ou clic ici: ${lien}`;\n\nreturn { json: {\n  user_id: user.id,\n  email: user.email,\n  nb: top.length,\n  subject, html, text,\n  story_urls: top.map((a) => a.url),\n} };"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
         1344,
-        64
+        48
       ],
       "id": "16ce2446-1978-4556-b28e-ee09b9488b66",
       "name": "Construire_email"
@@ -186,7 +188,7 @@
               "rightValue": 0,
               "operator": {
                 "type": "number",
-                "operation": "gt"
+                "operation": "gte"
               }
             }
           ],
@@ -241,7 +243,7 @@
       "typeVersion": 2.1,
       "position": [
         1664,
-        64
+        48
       ],
       "id": "5d196806-9e1e-4423-897f-abb7732b280a",
       "name": "envoie_mail",
@@ -386,12 +388,16 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate"
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "saveDataSuccessExecution": "all",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
-  "versionId": "a0eb4f94-9727-4875-88ab-c52566a19a93",
+  "versionId": "fa8448d3-9884-4435-9e88-43ca46b3a0b4",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "f759c8d61638adda5da2caf28408f3598cbfe088241fbb352d7ef3d026f764be"
