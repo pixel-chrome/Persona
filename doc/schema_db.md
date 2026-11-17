@@ -30,6 +30,7 @@ users ──< sessions
 Comptes, identifiés par **email** (pas de mot de passe). `role` ∈ {`user`, `admin`}.
 - Création à la **première validation d'un code email** : l'adresse est prouvée, `consent_at` est posé à ce moment (RGPD) et `unsubscribed` permet de se désinscrire.
 - Index unique sur `lower(email)` : `Paul@x.fr` et `paul@x.fr` = même compte.
+- `unsub_token` : secret aléatoire de 48 caractères hexadécimaux (`gen_random_bytes(24)`), unique, généré à la création du compte. Il sert uniquement au lien de désinscription présent dans les emails (workflow `04unsubscribe`) : il identifie l'utilisateur sans révéler son id ni son email. Ne jamais le copier dans un log, un ticket ou un chat.
 
 ### `login_codes`
 Code à 6 chiffres envoyé par email. On stocke son **SHA-256** (`code_hash`), jamais le code brut. `session_hash` lie le code à la conversation du chat qui l'a demandé (sinon `/code 123456` ne dirait pas à quel email il se rapporte). Une seule ligne par adresse (clé primaire = `email`) : redemander un code remplace l'ancien. `expires_at` (10 min), `attempts` (blocage à 5 essais ratés) et `created_at` (pas plus d'un envoi par minute) protègent contre le brute-force et le spam d'emails. Ligne supprimée après validation.
